@@ -1,3 +1,5 @@
+// หน้าแรกของเว็บไซต์
+
 import Image from "next/image";
 
 export default function Home() {
