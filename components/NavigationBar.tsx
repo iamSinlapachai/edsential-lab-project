@@ -14,33 +14,33 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b bg-[#0F1117]">
+    <nav className="w-full bg-[#0F1117]">
 
-      {/* Container จัดกึ่งกลาง (max-w-4xl) */}
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
+      {/* Container จัดกึ่งกลาง */}
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
 
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
-          <button className="text-gray-400 hover:text-white md:hidden">
+          <button className="text-gray-400 hover:text-white md:hidden">ss
             <Menu size={24} />
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="text-2xl font-medium  font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 tracking-tight">
+            <h1 className=" font-bold  font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 tracking-tight">
                     Edsential Lab
-                </div>
+                </h1>
             
            
           </Link>
 
-          <div className="hidden md:flex md:items-center md:gap-6">
+          <h3 className="hidden md:flex md:items-center md:gap-6">
             <Link
               href="/about"
-              className="font-medium  font-black text-transparent bg-clip-text bg-white tracking-tight"
+              className="text-sm font-medium  font-black text-transparent bg-clip-text bg-white tracking-tight"
             >
               About Us
             </Link>
-          </div>
+          </h3>
         </div>
 
         {/* --- RIGHT SIDE --- */}
