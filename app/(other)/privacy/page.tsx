@@ -1,0 +1,10 @@
+// หน้าแรกของเว็บไซต์
+
+
+export default function Privacy() {
+  return (
+    <div>
+      <h1>Privacy</h1>
+    </div>
+  );
+}
