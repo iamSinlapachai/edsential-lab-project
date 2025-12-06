@@ -14,10 +14,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b bg-[#191970]">
+    <nav className="w-full border-b bg-[#0F1117]">
 
       {/* Container จัดกึ่งกลาง (max-w-4xl) */}
-      <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between">
 
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
@@ -26,18 +26,17 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-white text-black font-bold text-lg transition-transform group-hover:scale-105">
-              E.
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Edsential
-            </span>
+            <div className="text-2xl font-medium  font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 tracking-tight">
+                    Edsential Lab
+                </div>
+            
+           
           </Link>
 
           <div className="hidden md:flex md:items-center md:gap-6">
             <Link
               href="/about"
-              className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+              className="font-medium  font-black text-transparent bg-clip-text bg-white tracking-tight"
             >
               About Us
             </Link>
@@ -50,7 +49,7 @@ export default function Navbar() {
           {/* ปุ่มเปลี่ยนธีม: เพิ่ม border และเปลี่ยน border-color เมื่อ hover */}
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center rounded-full p-2 text-gray-400 **border border-transparent hover:border-white** hover:text-white transition-all"
+            className="flex items-center justify-center rounded-full p-2 text-white **border border-transparent hover:border-white** hover:text-white transition-all"
             aria-label="Toggle Theme"
           >
             {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
@@ -61,7 +60,7 @@ export default function Navbar() {
             href="/profile"
             className="relative h-10 w-10 overflow-hidden rounded-full p-[2px] hover:brightness-110 transition-all active:scale-95" >
             {/* Profile Image Zone */}
-            <div className="relative h-full w-full rounded-full bg-black overflow-hidden">
+            <div className="relative h-full w-full rounded-full bg-white overflow-hidden">
                 <Image
                     src={profileImg}
                     alt="Profile"
