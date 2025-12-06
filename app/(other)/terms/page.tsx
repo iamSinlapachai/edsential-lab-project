@@ -1,0 +1,10 @@
+// หน้าแรกของเว็บไซต์
+
+
+export default function Terms() {
+  return (
+    <div>
+      <h1>Terms</h1>
+    </div>
+  );
+}
