@@ -14,10 +14,10 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full border-b bg-[#191970]">
+    <nav className="w-full border-b bg-[#0a0913]">
 
       {/* Container จัดกึ่งกลาง (max-w-4xl) */}
-      <div className="mx-auto flex h-16 max-w-4xl items-center justify-between px-4">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4">
 
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
@@ -26,18 +26,17 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="flex h-8 w-8 items-center justify-center rounded bg-white text-black font-bold text-lg transition-transform group-hover:scale-105">
-              E.
-            </div>
-            <span className="text-xl font-bold tracking-tight text-white">
-              Edsential
-            </span>
+            <div className="z-10 text-sm font-medium uppercase tracking-wider text-slate-400">
+                    Edsential Lab
+                </div>
+            
+           
           </Link>
 
           <div className="hidden md:flex md:items-center md:gap-6">
             <Link
               href="/about"
-              className="text-sm font-medium text-gray-400 transition-colors hover:text-white"
+              className="z-10 text-sm font-medium uppercase tracking-wider text-slate-400"
             >
               About Us
             </Link>
