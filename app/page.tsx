@@ -1,6 +1,5 @@
 // หน้าแรกของเว็บไซต์
 
-
 export default function Home() {
   return (
     <div>
