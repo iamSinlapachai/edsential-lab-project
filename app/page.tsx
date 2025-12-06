@@ -31,7 +31,7 @@ export default function Home() {
       </div>
 
       {/* Grid Section */}
-      <div className="max-w-7xl mx-auto px-4 md:px-8">
+      <div className="max-w-7xl  mx-auto lg:px-0 md:px-8 sm:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {roles.map((role) => (
             <Link

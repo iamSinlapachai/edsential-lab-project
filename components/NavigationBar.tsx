@@ -17,7 +17,7 @@ export default function Navbar() {
     <nav className="w-full border-b bg-[#0F1117]">
 
       {/* Container จัดกึ่งกลาง (max-w-4xl) */}
-      <div className="mx-auto flex h-20 max-w-7xl items-center justify-between">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
 
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">

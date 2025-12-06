@@ -8,7 +8,7 @@ export default function Footer() {
 
     return (
         <footer className='bg-[#0f172a] text-gray-300 py-20 flex items-center justify-center'>
-            <div className='container mx-auto max-w-4xl flex flex-col'>
+            <div className='container mx-auto max-w-7xl flex flex-col'>
             
                 <div className='flex gap-x-8 mx-auto mb-8 font-semibold'>
                     <div><Link href={"/"}>Edsential Lab</Link></div>
