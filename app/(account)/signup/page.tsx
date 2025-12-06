@@ -10,7 +10,7 @@ export default function SignupPage() {
                 </div>
                 <div className="z-10 max-w-md space-y-4">
                     <blockquote className="text-2xl font-medium leading-normal text-slate-100">
-                        "Education is the passport to the future, for tomorrow belongs to those who prepare for it today."
+                        Education is the passport to the future, for tomorrow belongs to those who prepare for it today.
                     </blockquote>
                     <div className="text-sm text-slate-400">- Malcolm X</div>
                 </div>
