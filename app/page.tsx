@@ -1,3 +1,4 @@
+// หน้าแรกของเว็บไซต์
 import Link from "next/link";
 
 export default function Home() {
