@@ -21,26 +21,26 @@ export default function Navbar() {
 
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
-          <button className="text-gray-400 hover:text-white md:hidden">ss
+          <button className="text-gray-400 hover:text-white md:hidden">
             <Menu size={24} />
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <h1 className=" font-bold  font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-500 to-pink-500 tracking-tight">
+            <h1 className=" font-bold  text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
                     Edsential Lab
                 </h1>
             
            
           </Link>
 
-          <h3 className="hidden md:flex md:items-center md:gap-6">
+          {/* <h3 className="hidden md:flex md:items-center md:gap-6">
             <Link
               href="/about"
               className="text-sm font-medium  font-black text-transparent bg-clip-text bg-white tracking-tight"
             >
               About Us
             </Link>
-          </h3>
+          </h3> */}
         </div>
 
         {/* --- RIGHT SIDE --- */}
@@ -58,7 +58,7 @@ export default function Navbar() {
           {/* PROFILE IMAGE BUTTON */}
           <Link
             href="/profile"
-            className="relative h-10 w-10 overflow-hidden rounded-full p-[2px] hover:brightness-110 transition-all active:scale-95" >
+            className="relative h-10 w-10 overflow-hidden rounded-full p-0.5 hover:brightness-110 transition-all active:scale-95" >
             {/* Profile Image Zone */}
             <div className="relative h-full w-full rounded-full bg-white overflow-hidden">
                 <Image

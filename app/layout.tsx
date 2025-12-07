@@ -3,6 +3,7 @@ import { Prompt } from "next/font/google";
 import "./globals.css";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/NavigationBar";
+import AOSAnimate from "@/components/aos-animate";
 
 const prompt = Prompt({
   variable: "--font-prompt",
@@ -27,6 +28,7 @@ export default function RootLayout({
       >
         <Navbar />
         {children}
+        <AOSAnimate/>
         <Footer />
         
       </body>
