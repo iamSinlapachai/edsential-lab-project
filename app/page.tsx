@@ -13,10 +13,17 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-gray-300 font-sans selection:bg-[#7b4dff] selection:text-white pb-10  md:pb-20" >
-      
+    <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white pb-10  md:pb-20 z-10 relative" >
+
+
       {/* Hero Section */}
-      <div  className="pt-12 md:pt-20 pb-8 md:pb-12 flex flex-col items-center text-center px-4 md:px-6" data-aos="fade-up" >
+      <div className="pt-12 md:pt-20 pb-8 md:pb-12 flex flex-col items-center text-center px-4 md:px-6 " data-aos="fade-up" >
+        {/* Background */}
+        <div className="absolute inset-0 -z-10 h-full w-full pointer-events-none">
+          <div className="absolute top-0 right-0 -mr-20 -mt-20 h-[600px] w-[500px] rounded-full bg-purple-600/20 blur-[150px]" />
+          <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-[600px] w-[500px] rounded-full bg-fuchsia-600/20 blur-[150px]" />
+        </div>
+
         <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600 mb-4 md:mb-6 tracking-tight">
           Developer Roadmaps
         </h1>
@@ -43,21 +50,21 @@ export default function Home() {
             >
               <div className="flex justify-between items-center">
                 <span className="font-semibold text-gray-200 group-hover:text-white transition-colors text-sm sm:text-base">
-                    {role}
+                  {role}
                 </span>
-                
+
                 {/* Save Icon (Bookmark) */}
                 <button className="text-gray-600 hover:text-gray-300 transition-colors p-1">
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
-                    strokeLinejoin="round" 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
                     <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
                   </svg>

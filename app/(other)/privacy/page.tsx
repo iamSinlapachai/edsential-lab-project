@@ -52,7 +52,7 @@ const privacyContent = {
 export default function PrivacyPage() {
     return (
         <div className="min-h-screen bg-[#0F1117] text-gray-300  selection:bg-[#7b4dff] selection:text-white pb-10 md:pb-20">
-
+            
             <div className='flex flex-col items-center justify-center'>
             
                 {/* Header และ Back Button Area */}

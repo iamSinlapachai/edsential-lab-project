@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { Moon, Sun, Menu } from 'lucide-react';
 import { useState } from 'react';
 import profileImg from '@/assets/image/profile.png';
+import Avatar from '@mui/material/Avatar';
+import Stack from '@mui/material/Stack';
+import { deepOrange, deepPurple } from '@mui/material/colors';
 
 export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -47,29 +50,25 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
 
           {/* ปุ่มเปลี่ยนธีม: เพิ่ม border และเปลี่ยน border-color เมื่อ hover */}
-          <button
+          {/* <button
             onClick={toggleTheme}
             className="flex items-center justify-center rounded-full p-2 text-white **border border-transparent hover:border-white** hover:text-white transition-all"
             aria-label="Toggle Theme"
           >
             {isDarkMode ? <Moon size={20} /> : <Sun size={20} />}
-          </button>
+          </button> */}
+          {/* <p className='text-gray-400 text-l'>Username</p> */}
 
           {/* PROFILE IMAGE BUTTON */}
           <Link
-            href="/profile"
-            className="relative h-10 w-10 overflow-hidden rounded-full p-0.5 hover:brightness-110 transition-all active:scale-95" >
+            href="/settings/profile"
+            className="" >
             {/* Profile Image Zone */}
-            <div className="relative h-full w-full rounded-full bg-white overflow-hidden">
-                <Image
-                    src={profileImg}
-                    alt="Profile"
-                    fill
-                    className="object-cover"
-                    placeholder="blur"
-                />
-            </div>
+            
+                <Avatar sx={{ bgcolor: deepPurple[500], width: 36, height:36 }}>N</Avatar>
+            
           </Link>
+          
 
         </div>
 

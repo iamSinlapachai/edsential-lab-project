@@ -1,0 +1,42 @@
+/* 2.1. Backdrop (พื้นหลังมืดๆ) */
+.modalBackdrop {
+  /* ทำให้แสดงทับทุกอย่างบนหน้าจอ */
+  position: fixed; 
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  
+  /* สีพื้นหลังโปร่งแสง */
+  background-color: rgba(0, 0, 0, 0.5); 
+  
+  /* จัดให้อยู่ตรงกลางจอ และอยู่เหนือเนื้อหาอื่น */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* ค่าที่สูงเพื่อให้แสดงทับเนื้อหาอื่น */
+}
+
+/* 2.2. Modal Content (กล่อง Pop-up) */
+.modalContent {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 500px;
+  position: relative;
+  /* ทำให้เนื้อหา modal ไม่ไปสั่งปิดตัวเองเมื่อคลิกข้างใน */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+
+  color: #333; /* สีข้อความภายใน modal */
+}
+
+/* 2.3. ปุ่มปิด (X) */
+.closeButton {
+  position: absolute;
+  top: 0px;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+}

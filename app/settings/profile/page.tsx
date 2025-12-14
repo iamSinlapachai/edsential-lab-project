@@ -10,6 +10,8 @@ import {
     LayoutDashboard, Search, Mail, Github, Linkedin, Briefcase, Code, Bookmark
 } from "lucide-react";
 
+import GradientBG from "@/components/gradient-bg";
+
 
 // *** 1. ข้อมูล Profile เริ่มต้น (ลบ LinkedIn ออก) ***
 
@@ -41,7 +43,8 @@ const menuGroups = [
     title: "บัญชี",
     links: [
       { name: "โปรไฟล์", href: "/settings/profile", icon: User }, 
-      { name: "ตั้งค่า", href: "/settings/edsential", icon: Settings },
+      { name: "Edsential", href: "/settings/edsential", icon: User }, 
+      { name: "ตั้งค่า", href: "/settings/", icon: Settings },
     ],
   },
   {
@@ -79,11 +82,12 @@ export default function ProfilePage() {
   
   return (
     <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white">
-      
-      <div className="max-w-7xl mx-auto flex h-full">
+      <GradientBG></GradientBG>
+
+      <div className="max-w-7xl mx-auto flex h-full relative z-10">
         
         {/* Sidebar Navigation */}
-        <aside className="w-64 bg-[#161b22] border-r border-gray-800 flex flex-col p-4 h-screen sticky top-0">
+        <aside className="w-64 bg-[#161b22] rounded-3xl mb-6 border-r border-gray-800 flex flex-col p-4 h-screen sticky top-0">
           
           {/* Account/Setting Header */}
           <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-4 pt-2">

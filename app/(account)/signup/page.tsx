@@ -5,14 +5,14 @@ import Image from "next/image";
 export default function SignUpPage() {
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center bg-slate-900 overflow-hidden">
-      {/* Background */}
+      {/* --- Background Elements --- */}
       <div className="absolute inset-0 z-0 h-full w-full pointer-events-none">
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-[500px] w-[500px] rounded-full bg-blue-600/20 blur-[100px]" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-[500px] w-[500px] rounded-full bg-indigo-600/20 blur-[100px]" />
+        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-[500px] w-[500px] rounded-full bg-purple-600/20 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-[500px] w-[500px] rounded-full bg-fuchsia-600/20 blur-[100px]" />
       </div>
 
       {/* Card */}
-      <div className="relative z-10 w-full max-w-md space-y-8 rounded-2xl bg-white p-6 shadow-xl sm:p-8 dark:bg-slate-950 dark:border dark:border-slate-800">
+      <div className="relative z-10 w-full max-w-md space-y-8 rounded-3xl bg-white/20 dark:bg-slate-950/60 backdrop-blur-xl border border-white/20 dark:border-slate-700/40 p-6 shadow-2xl sm:p-8">
         {/* Header */}
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-slate-50">
@@ -76,8 +76,11 @@ export default function SignUpPage() {
             />
           </div>
 
-          <button className="w-full rounded-md bg-blue-600 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-600 mt-5">
-            Create Account
+          <button
+
+            className="w-full rounded-md bg-purple-700 py-2 mt-3 text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600"
+          >
+            Continue
           </button>
         </form>
 
@@ -94,8 +97,14 @@ export default function SignUpPage() {
         </div>
 
         {/* Google Login */}
-        <button className="inline-flex h-10 w-full items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50">
-          <Image src={GoogleLogo} alt="Google Logo" width={16} height={16} className="mr-2" />
+        <button className="inline-flex h-10 w-full items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-gray-200">
+          <Image
+            src={GoogleLogo}
+            alt="Google Logo"
+            width={16}
+            height={16}
+            className="mr-2"
+          />
           Google
         </button>
 
