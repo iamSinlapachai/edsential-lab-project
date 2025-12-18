@@ -10,6 +10,7 @@ import {
     LayoutDashboard, Search, Mail, Github, Linkedin, Briefcase, Code, Bookmark
 } from "lucide-react";
 
+import { ElementType } from "react";
 import GradientBG from "@/components/gradient-bg";
 
 
@@ -35,6 +36,13 @@ const getSkillStyle = (skill: string) => {
   return "bg-gray-700/50 text-gray-400 border-gray-600/50";
 };
 
+interface SidebarLinkProps {
+  name: string;
+  href: string;
+  Icon: ElementType; // ใช้ ElementType สำหรับ Component ที่ส่งมาเป็น Prop
+  isActive: boolean;
+}
+
 
 // *** 2. ข้อมูลเมนูใน Sidebar (เหมือนเดิม) ***
 
@@ -59,7 +67,7 @@ const menuGroups = [
 
 // *** 3. คอมโพเนนต์สำหรับลิงก์ใน Sidebar ***
 
-const SidebarLink = ({ name, href, Icon, isActive }) => (
+const SidebarLink = ({ name, href, Icon, isActive }: SidebarLinkProps) => (
   <Link
     href={href}
     className={`flex items-center p-3 rounded-lg text-sm font-medium transition-colors duration-150
