@@ -23,6 +23,7 @@ export const metadata: Metadata = {
   other: {
     "darkreader-lock": "true",
   },
+  
 };
 
 export default function RootLayout({

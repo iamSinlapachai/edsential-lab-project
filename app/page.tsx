@@ -31,7 +31,7 @@ export default async function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white pb-10 md:pb-20 z-10 relative">
+    <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white pb-10 md:pb-20 z-10 relative ">
       {/* Hero Section */}
       <div
         className="pt-12 md:pt-20 pb-8 md:pb-12 flex flex-col items-center text-center px-4 md:px-6"
