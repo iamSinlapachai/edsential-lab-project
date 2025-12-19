@@ -55,7 +55,7 @@ export default function SignUpPage() {
       if (error) throw error;
 
       // ถ้าสำเร็จ ให้ไปหน้าแจ้งเตือนให้เช็คเมล
-      router.push("/verify-email");
+      router.push("/signup/verify-email");
     } catch (error: any) {
       console.error("Signup Error:", error);
       setErrorMsg(error.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
@@ -191,7 +191,7 @@ export default function SignUpPage() {
           <p className="px-8 text-center text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
             <Link
-              href="/signin"
+              href="/login"
               className="font-semibold text-slate-900 underline underline-offset-4 hover:text-slate-800 dark:text-slate-100 dark:hover:text-slate-300 transition-colors"
             >
               Sign in
