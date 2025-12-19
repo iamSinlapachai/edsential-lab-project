@@ -23,7 +23,7 @@ const menuGroups = [
       { name: "โปรไฟล์", href: "/settings/profile", icon: User },
       {
         name: "Edsential Progress",
-        href: "/settings/edsential",
+        href: "/settings/edsential-progress",
         icon: BarChart3,
       },
       { name: "ตั้งค่า", href: "/settings/", icon: Settings },
