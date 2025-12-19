@@ -9,21 +9,21 @@ export default function Footer() {
     return (
         <footer className='bg-[#161b21] text-gray-300 py-10 '>
             <div className='container mx-auto px-8 max-w-7xl flex flex-col ' >
-            
-                <div className='flex gap-x-8 mx-auto mb-8 font-semibold'>
+
+                <div className="mx-auto mb-8 font-semibold grid grid-cols-2 gap-y-4 gap-x-6 text-center sm:grid-cols-3 md:flex md:gap-x-8 md:justify-center">
                     <div><Link href={"/"}>Edsential Lab</Link></div>
                     <div><Link href={"/aboutus"}>About Us</Link></div>
                     <div><Link href={"/"}>Guides</Link></div>
                     <div><Link href={"/"}>FAQs</Link></div>
                     <div><Link href={"/"}>Youtube</Link></div>
                 </div>
- 
+
                 <div className='flex flex-col md:flex-row mx-auto md:mx-0 text-center md:text-start justify-center md:justify-between '>
 
                     {/* Column 1 */}
                     <div className='mb-10 md:mb-0'>
                         <div className='text-white'><span className='font-bold'>Edsential Lab</span> <span className='mx-2'> by </span><span className='bg-purple-600 text-white p-1.5 rounded-xl'>@Edsential Team</span></div>
-                        <div className='font-light my-5'>Edsential Lab created for best practices, projects, <br/> artcles, resources and journeys to help you choose your <br /> path and grow in your career</div>
+                        <div className='font-light my-5'>Edsential Lab created for best practices, projects, <br /> artcles, resources and journeys to help you choose your <br /> path and grow in your career</div>
                         <div className='font-light'>© Edsential Lab • <Link href={"/terms"}>Terms of Service</Link> • <Link href={"/privacy"}>Privacy Policy</Link> </div>
                     </div>
 

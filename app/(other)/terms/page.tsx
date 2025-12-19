@@ -48,7 +48,7 @@ export default function TermsPage() {
             className="inline-flex items-center text-gray-400 hover:text-purple-400 transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            กลับไปที่ตั้งค่า
+            กลับไปที่โปรไฟล์
           </Link>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2 tracking-tight">

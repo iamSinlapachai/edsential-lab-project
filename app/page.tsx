@@ -5,8 +5,9 @@ import "aos/dist/aos.css";
 export default function Home() {
 
   const roles = [
-    "AI Engineer", "Roblox Game Developer", "Web Developer"
+    "AI Engineer", "Roblox Game Developer", "Web Developer", "Data Analyst", "Data Engineer", "UX UI Design", 
   ];
+  {/* "Affiliate Marketing", "Digital Marketing", "Marketing", "Graphic Design", "Video Editor", "Content Creator"*/}
 
   const getSlug = (role: string) => {
     return role.toLowerCase().replace(/ /g, "-");
@@ -24,11 +25,11 @@ export default function Home() {
           <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-[600px] w-[500px] rounded-full bg-fuchsia-600/20 blur-[150px]" />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600 mb-4 md:mb-6 tracking-tight">
-          Developer Roadmaps
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600 mb-4 md:mb-6 tracking-wide">
+          Careers Roadmaps
         </h1>
-        <p className="max-w-2xl text-sm sm:text-base md:text-lg text-gray-400 leading-relaxed">
-          roadmap.sh is a community effort to create roadmaps, guides and other educational content to help guide developers in picking up a path and guide their learnings.
+        <p className="max-w-2xl text-sm sm:text-base md:text-xl text-gray-400 leading-relaxed">
+          เป็นตัวนำทางให้กับนักศึกษาในการเลือกเส้นทางเรียนรู้ ไปสู่สายอาชีพในฝัน
         </p>
       </div>
 
@@ -40,7 +41,7 @@ export default function Home() {
       </div>
 
       {/* Grid Section */}
-      <div className="max-w-7xl  mx-auto px-8 md:px-8 sm:px-8" data-aos="fade-up">
+      <div className="max-w-7xl  mx-auto px-4 md:px-4 sm:px-4" data-aos="fade-up">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {roles.map((role) => (
             <Link

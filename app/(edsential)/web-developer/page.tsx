@@ -1,179 +1,435 @@
 "use client";
-import React from "react";
-import { useState } from "react";
-import Modal from "@/components/Modal";
-import "aos/dist/aos.css";
+import React, { useState, useEffect } from "react";
+import { 
+  Play, 
+  X, 
+  ChevronRight, 
+  CheckCircle2, 
+  BookOpen, 
+  Layers, 
+  Database, 
+  Globe, 
+  Server, 
+  Code2, 
+  Circle, 
+  Trophy 
+} from "lucide-react";
 
+// --- 1. กำหนด Interfaces (Types) ---
 
-// 1. สร้างข้อมูลจำลองสำหรับแต่ละหัวข้อ (เพิ่มลดได้ที่นี่ที่เดียว)
-const topics = [
+interface Topic {
+  id: number;
+  title: string;
+  category: string;
+  description: string;
+  videoId: string;
+  icon: React.ReactNode;
+  color: string;
+}
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  topic: Topic | null;
+  isCompleted: boolean;
+  onToggle: (id: number) => void;
+}
+
+// --- 2. ข้อมูลจำลอง (Data) ---
+const topics: Topic[] = [
   {
     id: 1,
     title: "HTML",
-    description: "⚡️ **HTML (HyperText Markup Language)** คือภาษาหลักที่ใช้สร้างโครงสร้างและเนื้อหาของหน้าเว็บทั้งหมด เปรียบเสมือน 'กระดูก' ของเว็บไซต์ ใช้สำหรับกำหนดองค์ประกอบพื้นฐาน เช่น หัวข้อ (H1), ย่อหน้า (P), ลิงก์ (A), รูปภาพ (IMG), และฟอร์มต่างๆ ซึ่งเป็นรากฐานที่จำเป็นในการแสดงผลบนเบราว์เซอร์",
-    videoId: "qz0aGYrrlhU",
-    color: "bg-orange-600",
+    category: "Frontend Foundation",
+    description: "⚡️ **HTML (HyperText Markup Language)** คือภาษาหลักที่ใช้สร้างโครงสร้างและเนื้อหาของหน้าเว็บ เปรียบเสมือน 'กระดูก' ของเว็บไซต์ คลิปนี้จะสอนพื้นฐาน HTML5 และ CSS3 เบื้องต้นสำหรับผู้เริ่มต้น",
+    videoId: "vH3i3pfPbBs", 
+    icon: <Globe className="w-6 h-6" />,
+    color: "text-orange-500 border-orange-500/30 bg-orange-500/10",
   },
   {
     id: 2,
     title: "CSS",
-    description: "🎨 **CSS (Cascading Style Sheets)** คือภาษาที่ใช้ตกแต่งและจัดรูปแบบการแสดงผลของเนื้อหา HTML เปรียบเสมือน 'เสื้อผ้าและการแต่งหน้า' ใช้ควบคุมทุกอย่างที่เกี่ยวกับรูปลักษณ์ภายนอก เช่น สี, ฟอนต์, ขนาดตัวอักษร, การจัดระยะห่าง (Padding/Margin), และการจัดวาง Layout ที่ซับซ้อน เช่น Grid หรือ Flexbox เพื่อให้เว็บไซต์ดูสวยงามและน่าใช้งาน",
-    videoId: "1Rs2ND1ryYc",
-    color: "bg-blue-600",
+    category: "Styling",
+    description: "🎨 **CSS (Cascading Style Sheets)** คือภาษาที่ใช้ตกแต่งหน้าเว็บให้สวยงาม เปรียบเสมือน 'เสื้อผ้าและการแต่งหน้า' คลิปนี้จะเจาะลึก HTML5 & CSS3 Phase 1 เพื่อการตกแต่งเว็บไซต์อย่างมืออาชีพ",
+    videoId: "HcInSUzhaUc", 
+    icon: <Layers className="w-6 h-6" />,
+    color: "text-blue-500 border-blue-500/30 bg-blue-500/10",
   },
   {
     id: 3,
     title: "JavaScript",
-    description: "🧠 **JavaScript (JS)** คือภาษาโปรแกรมมิ่งที่ทำให้เว็บไซต์มีชีวิตชีวา เปรียบเสมือน 'สมอง' ที่ควบคุมการทำงานแบบโต้ตอบ (Interactivity) กับผู้ใช้ เช่น การจัดการเหตุการณ์ (Event Handling), การเปลี่ยนแปลงเนื้อหาแบบไดนามิก, การเรียกข้อมูลจากเซิร์ฟเวอร์ (AJAX), การทำ Animation, และการสร้างฟังก์ชันการคำนวณที่ซับซ้อนบนฝั่ง Client-side (เบราว์เซอร์)",
-    videoId: "W6NZfCO5SIk",
-    color: "bg-yellow-600",
+    category: "Programming Logic",
+    description: "🧠 **JavaScript (JS)** คือหัวใจสำคัญของการทำเว็บให้มีลูกเล่น (Interactive) คลิปนี้คือคอร์สจัดเต็ม 8 ชั่วโมงจบในคลิปเดียว ครอบคลุมทุกพื้นฐานที่จำเป็น",
+    videoId: "AbjY-ajKgSI", 
+    icon: <Code2 className="w-6 h-6" />,
+    color: "text-yellow-400 border-yellow-400/30 bg-yellow-400/10",
   },
   {
     id: 4,
     title: "NPM",
-    description: "📦 **NPM (Node Package Manager)** เป็นผู้จัดการแพ็กเกจมาตรฐานสำหรับ Node.js เปรียบเสมือน 'App Store สำหรับนักพัฒนา' ที่ช่วยให้คุณติดตั้ง, แชร์, และจัดการ Library หรือ Module โค้ดที่คนอื่นเขียนไว้ (เช่น React, Express) ในโปรเจกต์ของคุณได้อย่างง่ายดาย รวมถึงการจัดการ Dependency ของโปรเจกต์ให้เป็นระเบียบ",
-    videoId: "jHDhaSSKmB0",
-    color: "bg-red-600",
+    category: "Package Manager",
+    description: "📦 **NPM (Node Package Manager)** คือเครื่องมือจัดการแพ็กเกจของ Node.js ที่ช่วยให้เราติดตั้ง Library ต่างๆ ได้ง่ายดาย คลิปนี้สอนการใช้ NPM และเข้าใจ package.json",
+    videoId: "BQvVhzffVoE", 
+    icon: <BookOpen className="w-6 h-6" />,
+    color: "text-red-500 border-red-500/30 bg-red-500/10",
   },
   {
     id: 5,
     title: "Git & GitHub",
-    description: "💾 **Git** คือระบบควบคุมเวอร์ชัน (Version Control System) ที่ใช้ติดตามและจัดการการเปลี่ยนแปลงของโค้ดในโปรเจกต์ ส่วน **GitHub** คือแพลตฟอร์มออนไลน์สำหรับจัดเก็บโค้ด Git แบบคลาวด์ ช่วยให้ทำงานร่วมกับทีมได้อย่างราบรื่น สามารถย้อนกลับไปเวอร์ชันเก่าๆ หรือรวมโค้ดที่แตกต่างกันเข้าด้วยกันได้อย่างมีประสิทธิภาพ",
-    videoId: "USjZcfj8yxE",
-    color: "bg-gray-700",
+    category: "Version Control",
+    description: "💾 **Git & GitHub** คือระบบเก็บเวอร์ชันของโค้ดที่โปรแกรมเมอร์ทั่วโลกต้องใช้ คลิปนี้สอนตั้งแต่ติดตั้งจนถึงการ Push/Pull โค้ดขึ้น Cloud แบบจับมือทำ",
+    videoId: "gqCzYy7mA3E", 
+    icon: <Server className="w-6 h-6" />,
+    color: "text-gray-400 border-gray-500/30 bg-gray-500/10",
   },
   {
     id: 6,
     title: "Tailwind CSS",
-    description: "💨 **Tailwind CSS** คือ Utility-first CSS Framework ที่ให้คลาส CSS ขนาดเล็ก (Utility Classes) จำนวนมาก เช่น `flex`, `pt-4`, `text-center` ซึ่งช่วยให้คุณสร้าง User Interface ได้อย่างรวดเร็วและยืดหยุ่น โดยการใส่คลาสเหล่านี้ลงใน HTML โดยตรง โดยไม่จำเป็นต้องเขียน CSS แยกไฟล์อีกต่อไป",
-    videoId: "dFgzHOX84xQ",
-    color: "bg-cyan-600",
+    category: "CSS Framework",
+    description: "💨 **Tailwind CSS** คือ Utility-first Framework ที่มาแรงที่สุด ช่วยให้จัดหน้าเว็บได้ไวโดยไม่ต้องเขียน CSS เองเยอะ คลิปนี้ปูพื้นฐาน Tailwind เวอร์ชันใหม่",
+    videoId: "wwY9cdTzgoE", 
+    icon: <Layers className="w-6 h-6" />,
+    color: "text-cyan-400 border-cyan-400/30 bg-cyan-400/10",
   },
   {
     id: 7,
     title: "React",
-    description: "⚛️ **React** คือ JavaScript Library ยอดนิยมที่ใช้สำหรับสร้าง User Interface (UI) ด้วยแนวคิด **Component-based** ทำให้การพัฒนาซอฟต์แวร์ขนาดใหญ่ทำได้ง่ายขึ้น โดยการแบ่ง UI ออกเป็นส่วนเล็กๆ ที่สามารถนำกลับมาใช้ใหม่ได้ (Reusable Components) และจัดการสถานะ (State) ของข้อมูลได้อย่างมีประสิทธิภาพ",
-    videoId: "SqcY0GlETPk",
-    color: "bg-blue-400",
+    category: "Frontend Library",
+    description: "⚛️ **React** คือ Library ยอดนิยมจาก Facebook สำหรับสร้าง UI คลิปนี้สอน React เบื้องต้นจนถึงการนำไปใช้งานจริง เข้าใจ Concept Component-based",
+    videoId: "ojT758BNvqg", 
+    icon: <Code2 className="w-6 h-6" />,
+    color: "text-blue-400 border-blue-400/30 bg-blue-400/10",
   },
   {
     id: 8,
     title: "Node.js",
-    description: "🖥️ **Node.js** คือ Runtime Environment ที่อนุญาตให้ JavaScript สามารถรันได้นอกเบราว์เซอร์ (Server-side) ช่วยให้นักพัฒนาสามารถใช้ภาษา JavaScript เพียงภาษาเดียวในการสร้างทั้งฝั่ง Frontend และ Backend ได้ ทำให้การสร้าง Web Server, การเข้าถึงฐานข้อมูล, และการทำ API เป็นเรื่องง่ายขึ้น",
-    videoId: "TlB_eWDSMt4",
-    color: "bg-green-600",
+    category: "Backend Runtime",
+    description: "🖥️ **Node.js** ช่วยให้เราเขียน JavaScript บนฝั่ง Server ได้ คลิปนี้ปูพื้นฐาน Node.js สำหรับการพัฒนาเว็บสมัยใหม่ เข้าใจการทำงานของ Backend",
+    videoId: "QgDFVaIl-l8", 
+    icon: <Server className="w-6 h-6" />,
+    color: "text-green-500 border-green-500/30 bg-green-500/10",
   },
   {
     id: 9,
-    title: "Database (PostgreSQL)",
-    description: "🗄️ **Database** (เช่น PostgreSQL) คือระบบจัดการฐานข้อมูลเชิงสัมพันธ์ (Relational Database) ที่ใช้ในการจัดเก็บข้อมูลอย่างเป็นระบบ มีการจัดโครงสร้างข้อมูลแบบตาราง ทำให้สามารถจัดเก็บ, ค้นหา, จัดการ, และเรียกใช้ข้อมูลจำนวนมากได้อย่างรวดเร็ว ถูกต้อง และเชื่อถือได้ โดยเฉพาะในแอปพลิเคชันที่ต้องการความเสถียรของข้อมูล",
-    videoId: "qw--VYLpxG4",
-    color: "bg-indigo-600",
+    title: "PostgreSQL",
+    category: "Database",
+    description: "🗄️ **PostgreSQL** คือฐานข้อมูลระดับ Enterprise ที่ฟรีและทรงพลัง คลิปนี้สอนการใช้งานเบื้องต้นและการจัดการข้อมูลด้วย SQL",
+    videoId: "o--rsYuxBhg", 
+    icon: <Database className="w-6 h-6" />,
+    color: "text-indigo-400 border-indigo-400/30 bg-indigo-400/10",
   },
   {
     id: 10,
     title: "RESTful API",
-    description: "🔗 **RESTful API** (Representational State Transfer) คือชุดของหลักการออกแบบสถาปัตยกรรมสำหรับ Web Service ที่ใช้ **HTTP requests** เพื่อจัดการข้อมูล (CRUD Operations: Create, Read, Update, Delete) ทำให้ Client (เช่น React) สามารถสื่อสารกับ Server (เช่น Node.js) ได้อย่างมีมาตรฐาน ยืดหยุ่น และมีประสิทธิภาพ",
-    videoId: "Q-BpqyOT3a8",
-    color: "bg-teal-600",
+    category: "Communication",
+    description: "🔗 **RESTful API** คือมาตรฐานการส่งข้อมูลระหว่างหน้าเว็บ (Frontend) และหลังบ้าน (Backend) คลิปนี้สอนออกแบบและพัฒนา API ด้วย Express.js",
+    videoId: "Zpsccboc_QE", 
+    icon: <Globe className="w-6 h-6" />,
+    color: "text-teal-400 border-teal-400/30 bg-teal-400/10",
   },
   {
     id: 11,
     title: "Supabase",
-    description: "🚀 **Supabase** คือแพลตฟอร์ม Open Source 'Alternative to Firebase' ที่ให้บริการ Backend-as-a-Service (BaaS) แบบครบวงจร ประกอบด้วย **PostgreSQL Database** จริง, ระบบยืนยันตัวตน (Auth), การเก็บไฟล์ (Storage), และ API แบบ Realtime ช่วยให้นักพัฒนาสามารถสร้างแอปพลิเคชันที่มีฟีเจอร์ครบถ้วนได้อย่างรวดเร็ว โดยไม่ต้องจัดการเซิร์ฟเวอร์เอง",
-    videoId: "9kRgVxULbag",
-    color: "bg-purple-600",
+    category: "Backend as a Service",
+    description: "🚀 **Supabase** คือทางเลือก Open Source แทน Firebase ที่มี Database, Auth, Storage ครบจบในที่เดียว คลิปนี้แนะนำการเริ่มต้นใช้งานสำหรับมือใหม่",
+    videoId: "uKTxcfFkwZg", 
+    icon: <Database className="w-6 h-6" />,
+    color: "text-purple-400 border-purple-400/30 bg-purple-400/10",
   }
 ];
 
-export default function WebDeveloper() {
+// --- 3. Components ย่อย ---
 
-  // // 1. สร้าง State เพื่อเก็บสถานะของ Modal
-  // const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // // 2. ฟังก์ชันเปิด/ปิด Modal
-  // const openModal = () => setIsModalOpen(true);
-  // const closeModal = () => setIsModalOpen(false);
-
-  // 2. State เก็บ "Object ของหัวข้อที่เลือก" (ถ้าเป็น null คือยังไม่เลือก)
-  const [selectedTopic, setSelectedTopic] = useState(null);
-
-  // ฟังก์ชันเปิด Modal รับข้อมูล topic เข้ามา
-  const openModal = (topic) => {
-    setSelectedTopic(topic);
-  };
-
-  // ฟังก์ชันปิด Modal (เซ็ตกลับเป็น null)
-  const closeModal = () => {
-    setSelectedTopic(null);
-  };
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, topic, isCompleted, onToggle }) => {
+  if (!isOpen || !topic) return null;
 
   return (
-    // ใช้ min-h-screen เพื่อให้ความสูงเต็มหน้าจอเสมอ
-    <main className="min-h-screen bg-[#0F1117] text-gray-300 flex flex-col items-center justify-start pt-10" >
-
-
-      <div className="container max-w-6xl w-full" data-aos="fade-up">
-        {/* หัวข้อหลัก */}
-        <div className="flex items-center justify-center gap-6 mb-12">
-          <span className="h-0.5 w-48 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-60" />
-
-          <h1 className="text-center text-4xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 tracking-tight drop-shadow-lg">
-            Web Developer
-          </h1>
-
-          <span className="h-0.5 w-48 bg-gradient-to-r from-transparent via-pink-500 to-transparent opacity-60" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div 
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        onClick={onClose}
+      />
+      
+      {/* Content */}
+      <div className="relative w-full max-w-3xl bg-[#1a1d26] rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        
+        {/* Header */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-linear-to-br from-purple-900/20 to-transparent">
+          <div className="flex items-center gap-3">
+             <div className={`p-2 rounded-lg ${topic.color}`}>
+                {topic.icon}
+             </div>
+             <div>
+                <p className="text-xs uppercase tracking-wider text-gray-400 font-semibold">{topic.category}</p>
+                <h2 className="text-2xl font-bold text-white flex items-center gap-2">
+                    {topic.title}
+                    {isCompleted && <CheckCircle2 className="text-green-500 w-6 h-6" />}
+                </h2>
+             </div>
+          </div>
+          <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white">
+            <X size={24} />
+          </button>
         </div>
 
-        {/* 3. Grid Layout สำหรับปุ่ม */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mx-8">
-          {topics.map((topic) => (
-            <button
-              key={topic.id}
-              onClick={() => openModal(topic)}
-              className={`${topic.color} hover:brightness-110 transition-all duration-300 transform hover:-translate-y-1 shadow-lg hover:shadow-purple-500/30 rounded-xl p-6 flex flex-col items-center justify-center gap-2 group h-32 w-full`}
+        {/* Body */}
+        <div className="p-6 overflow-y-auto max-h-[70vh]">
+          {/* Video */}
+          <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-black ring-1 ring-white/10 mb-6 group">
+            <iframe
+              className="absolute top-0 left-0 w-full h-full"
+              src={`https://www.youtube.com/embed/${topic.videoId}?autoplay=1`}
+              title={topic.title}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            ></iframe>
+          </div>
+
+          {/* Description */}
+          <div className="prose prose-invert max-w-none">
+            <p className="text-lg text-gray-300 leading-relaxed whitespace-pre-line">
+              {topic.description}
+            </p>
+          </div>
+        </div>
+        
+        {/* Footer with Action Buttons (รวมปุ่ม Toggle จาก Code 2) */}
+        <div className="p-4 bg-[#13151c] border-t border-white/10 flex justify-between items-center">
+            <button 
+              onClick={() => onToggle(topic.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
+                isCompleted 
+                ? 'bg-green-500/10 text-green-500 hover:bg-green-500/20' 
+                : 'bg-white/5 text-gray-400 hover:bg-white/10'
+              }`}
             >
-              <span className="text-xl font-bold text-white group-hover:scale-110 transition-transform">
-                {topic.title}
-              </span>
-              <span className="text-xs text-white/80">คลิกเพื่อเรียนรู้</span>
+              {isCompleted ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+              {isCompleted ? "เรียนจบแล้ว" : "ยังไม่เรียนจบ"}
             </button>
-          ))}
+
+           <button 
+             onClick={onClose}
+             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors"
+           >
+             ปิดหน้าต่าง
+           </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function WebDeveloperRoadmap() {
+  const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
+
+  // --- Logic การเก็บ Progress (จาก Code ชุดที่ 2) ---
+  const [completedIds, setCompletedIds] = useState<number[]>([]);
+
+  useEffect(() => {
+    // โหลดข้อมูลจาก LocalStorage
+    const saved = localStorage.getItem("web_dev_progress");
+    if (saved) {
+        setCompletedIds(JSON.parse(saved));
+    }
+  }, []);
+
+  const toggleProgress = (id: number) => {
+    setCompletedIds(prev => {
+        const newIds = prev.includes(id) 
+            ? prev.filter(tid => tid !== id)
+            : [...prev, id];
+        
+        // บันทึกกลับลง LocalStorage
+        localStorage.setItem("web_dev_progress", JSON.stringify(newIds));
+        return newIds;
+    });
+  };
+
+  const progressPercent = Math.round((completedIds.length / topics.length) * 100);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+  return (
+    <main className="min-h-screen bg-[#0B0D13] text-gray-300 selection:bg-purple-500/30">
+      
+      {/* --- Sticky Progress Bar (จาก Code ชุดที่ 2) --- */}
+      <div className="fixed top-0 left-0 right-0 z-40 bg-[#0B0D13]/90 backdrop-blur-md border-b border-white/5 px-4 py-3 shadow-lg">
+        <div className="max-w-5xl mx-auto flex items-center gap-4">
+            <div className="flex-1">
+                <div className="flex justify-between text-xs text-gray-400 mb-1">
+                    <span>Your Progress</span>
+                    <span className="text-purple-400 font-bold">{progressPercent}% Completed</span>
+                </div>
+                <div className="h-2 w-full bg-gray-800 rounded-full overflow-hidden">
+                    <div 
+                        className={`h-full transition-all duration-500 ease-out ${progressPercent === 100 ? 'bg-linear-to-br from-green-400 to-green-600' : 'bg-linear-to-br from-purple-500 to-pink-500'}`}
+                        style={{ width: `${progressPercent}%` }}
+                    />
+                </div>
+            </div>
+            {progressPercent === 100 && (
+                <div className="flex items-center gap-2 text-yellow-500 animate-pulse font-bold text-sm whitespace-nowrap">
+                    <Trophy size={16} />
+                    <span className="hidden sm:inline">Certified!</span>
+                </div>
+            )}
+        </div>
+      </div>
+      
+      {/* --- Hero Section (จาก Code ชุดที่ 1) --- */}
+      <div className="relative pt-28 pb-16 px-4 text-center overflow-hidden">
+        {/* Background Gradients */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
+        
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-sm font-medium mb-6 animate-pulse">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+            </span>
+            Edsential 2025 Updated
+          </div>
+          
+          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-br from-purple-400 via-pink-400 to-purple-600 tracking-wide mb-6 drop-shadow-2xl">
+            Full Stack Developer
+          </h1>
+          
+          <p className="text-lg md:text-xl text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            เส้นทางการเรียนรู้สู่การเป็นนักพัฒนาเว็บมืออาชีพ เริ่มต้นจากศูนย์จนถึงการสร้างแอปพลิเคชันที่ใช้งานได้จริง เรียงลำดับความสำคัญไว้ให้คุณแล้ว
+          </p>
         </div>
       </div>
 
-      {/* 4. Modal Component (Render ครั้งเดียว แต่เปลี่ยนเนื้อหาข้างใน) */}
-      <Modal isOpen={!!selectedTopic} onClose={closeModal}>
-        {selectedTopic && (
-          <div className="text-gray-800">
-            {/* Header ของ Modal */}
-            <h2 className="text-3xl font-bold mb-4 text-purple-700 border-b pb-2">
-              {selectedTopic.title}
-            </h2>
+      {/* --- Roadmap Container --- */}
+      <div className="max-w-5xl mx-auto px-4 pb-32 mt-10">
+        <div className="relative">
+          
+          {/* เส้นแกนกลาง (Timeline Line) */}
+          <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-linear-to-br from-purple-600 via-purple-900/50 to-transparent md:-translate-x-1/2 rounded-full" />
 
-            {/* เนื้อหาคำอธิบาย */}
-            <p className="text-lg leading-relaxed text-gray-600 mb-6">
-              {selectedTopic.description}
-            </p>
+          {/* Items Loop */}
+          {topics.map((topic, index) => {
+            const isEven = index % 2 === 0;
+            const isCompleted = completedIds.includes(topic.id); // เช็คสถานะ
 
-            {/* Video Embed (Youtube) */}
-            <div className="relative w-full aspect-video rounded-lg overflow-hidden shadow-md bg-black">
-              <iframe
-                className="absolute top-0 left-0 w-full h-full"
-                src={`https://www.youtube.com/embed/${selectedTopic.videoId}`}
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
+            return (
+              <div 
+                key={topic.id} 
+                className={`relative flex items-center mb-12 md:mb-24 ${
+                  isEven ? 'md:flex-row' : 'md:flex-row-reverse'
+                }`}
+              >
+                
+                {/* 1. จุดเชื่อมต่อ (Connector Dot) - เปลี่ยนสีตามสถานะ */}
+                <div className={`absolute left-8 md:left-1/2 -translate-x-[5px] md:-translate-x-1/2 w-4 h-4 rounded-full z-10 shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-500 border-[3px]
+                   ${isCompleted ? 'bg-green-500 border-green-500 scale-125' : 'bg-[#0B0D13] border-purple-500'}
+                `}>
+                    {!isCompleted && <div className="absolute inset-0 bg-purple-500 rounded-full animate-ping opacity-20"></div>}
+                </div>
 
-            <div className="mt-4 text-center text-sm text-gray-400">
-              *วิดีโอตัวอย่างจาก YouTube
-            </div>
+                {/* 2. พื้นที่ว่างฝั่งตรงข้าม (Spacer) */}
+                <div className="hidden md:block md:w-1/2" />
+
+                {/* 3. การ์ดเนื้อหา (Content Card) */}
+                <div className={`w-full md:w-1/2 pl-20 md:pl-0 ${isEven ? 'md:pr-12' : 'md:pl-12'}`}>
+                  
+                  <div 
+                    onClick={() => setSelectedTopic(topic)}
+                    className={`group relative p-6 rounded-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer overflow-hidden border
+                        ${isCompleted 
+                            ? 'bg-[#13151c] border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)]' 
+                            : 'bg-[#13151c] border-white/5 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10'
+                        }
+                    `}
+                  >
+                    
+                    {/* Glow Effect */}
+                    <div className={`absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                        ${isCompleted ? 'from-green-500/5 to-transparent' : 'from-purple-500/5 to-transparent'}
+                    `} />
+                    
+                    {/* Badge Number / Check */}
+                    
+                        <div className="absolute top-4 right-4 text-5xl font-black text-white/5 group-hover:text-purple-500/10 transition-colors select-none">
+                             {String(index + 1).padStart(2, '0')}
+                        </div>
+                    
+
+                    <div className="relative z-10">
+                      {/* Topic Category */}
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${topic.color}`}>
+                          {topic.category}
+                      </span>
+                      
+                      {/* Title */}
+                      <h3 className={`text-2xl font-bold mb-2 transition-colors flex items-center gap-2
+                        ${isCompleted ? 'text-gray-200' : 'text-white group-hover:text-purple-400'}
+                      `}>
+                        {topic.title}
+                        {!isCompleted && <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-purple-500" />}
+                      </h3>
+
+                      {/* Short Description */}
+                      <p className="text-sm text-gray-500 line-clamp-2 mb-4 group-hover:text-gray-400 transition-colors">
+                        {topic.description.replace(/\*\*/g, '')}
+                      </p>
+
+                      {/* Action Button Row */}
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex items-center gap-2 text-sm font-medium text-purple-400 group-hover:text-purple-300">
+                            <Play size={16} fill="currentColor" />
+                            <span>ดูวิดีโอประกอบ</span>
+                        </div>
+
+                        {/* Quick Toggle Button (ปุ่มวงกลม/ติ๊กถูก บนการ์ด) */}
+                        <button 
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleProgress(topic.id);
+                            }}
+                            className={`z-20 p-2 rounded-full transition-all ${isCompleted ? 'text-green-500 bg-green-500/10' : 'text-gray-600 hover:bg-white/10 hover:text-gray-300'}`}
+                            title={isCompleted ? "Mark as Incomplete" : "Mark as Completed"}
+                        >
+                            {isCompleted ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+                        </button>
+                      </div>
+
+                    </div>
+
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+
+          {/* End Node */}
+          <div className="relative flex justify-center mt-12 pl-8 md:pl-0">
+             <div className={`px-6 py-3 rounded-full flex items-center gap-3 shadow-lg z-10 border transition-all duration-500
+                ${progressPercent === 100 
+                    ? 'bg-green-500/10 border-green-500/50 text-green-400 shadow-green-500/20' 
+                    : 'bg-[#13151c] border-purple-500/30 text-purple-300'
+                }
+             `}>
+                {progressPercent === 100 ? <Trophy className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5" />}
+                <span className="font-semibold">{progressPercent === 100 ? "Ready to Work!" : "พร้อมทำงานจริง!"}</span>
+             </div>
           </div>
-        )}
-      </Modal>
+
+        </div>
+      </div>
+
+      {/* --- Modal --- */}
+      <Modal 
+        isOpen={!!selectedTopic} 
+        topic={selectedTopic} 
+        onClose={() => setSelectedTopic(null)} 
+        isCompleted={selectedTopic ? completedIds.includes(selectedTopic.id) : false}
+        onToggle={toggleProgress}
+      />
+
     </main>
   );
 }
