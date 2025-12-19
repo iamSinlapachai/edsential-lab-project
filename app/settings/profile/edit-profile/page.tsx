@@ -295,11 +295,10 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={() => toggleSkill(skill)}
                   className={`flex items-center space-x-2 px-4 py-1.5 rounded-full border text-xs font-medium transition-all duration-200
-                        ${
-                          isSelected
-                            ? "bg-purple-600/20 border-purple-500 text-purple-300 shadow-md ring-1 ring-purple-500/30"
-                            : "bg-[#0F1117] border-gray-800 text-gray-500 hover:border-gray-600"
-                        }`}
+                        ${isSelected
+                      ? "bg-purple-600/20 border-purple-500 text-purple-300 shadow-md ring-1 ring-purple-500/30"
+                      : "bg-[#0F1117] border-gray-800 text-gray-500 hover:border-gray-600"
+                    }`}
                 >
                   <span>{skill}</span>
                   {isSelected && (
@@ -312,7 +311,14 @@ export default function EditProfilePage() {
           <p className="text-[10px] text-gray-500 mt-4 italic">
             * คลิกเพื่อเลือกทักษะที่จะแสดงในหน้าโปรไฟล์
           </p>
+
         </section>
+        <div className="flex justify-end">
+          <button className="flex items-center justify-center px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5">
+            <Save className="w-4 h-4 mr-2" /> บันทึกข้อมูล
+          </button>
+        </div>
+
       </div>
     </SettingsShell>
   );

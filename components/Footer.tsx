@@ -1,12 +1,13 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import saulogo from "@/assets/image/logosau-01.png";
 
 export default function Footer() {
   const TheNewStackLogo = "https://roadmap.sh/img/tns-sm.png";
 
   return (
-    <footer className="bg-[#161b21] text-gray-300 py-10 ">
+    <footer className="bg-[#161b21] text-gray-300 py-15 ">
       <div className="container mx-auto px-8 max-w-7xl flex flex-col ">
         <div className="mx-auto mb-8 font-semibold grid grid-cols-2 gap-y-4 gap-x-6 text-center sm:grid-cols-3 md:flex md:gap-x-8 md:justify-center">
           <div>
@@ -31,14 +32,14 @@ export default function Footer() {
           </div>
           <div>
             <Link href={"/"} className="hover:underline">
-              Youtube
+              Youtubev
             </Link>
           </div>
         </div>
 
         <div className="flex flex-col md:flex-row mx-auto md:mx-0 text-center md:text-start justify-center md:justify-between ">
           {/* Column 1 */}
-          <div className="mb-10 md:mb-0">
+          <div className="mt-5">
             <div className="text-white">
               <span className="font-bold">Edsential</span>{" "}
               <span className="mx-2"> by </span>
@@ -46,12 +47,10 @@ export default function Footer() {
                 @Edsential Team
               </span>
             </div>
-            <div className="font-light my-5">
-              Edsential created for best practices, projects, <br /> artcles,
-              resources and journeys to help you choose your <br /> path and
-              grow in your career
+            <div className="font-light mt-6 ">
+              Edsential ถูกสร้างขึ้นเพื่อรวบรวมแนวทางปฏิบัติที่ดีที่สุด <br />  โปรเจกต์ บทความ แหล่งเรียนรู้ และเส้นทางการเรียนรู้ต่าง ๆ <br /> เพื่อช่วยให้คุณเลือกเส้นทางที่เหมาะกับตัวเอง <br /> และเติบโตในสายอาชีพของคุณ
             </div>
-            <div className="font-light">
+            <div className="mt-5 text-xs font-medium text-gray-500 tracking-wide uppercase">
               © Edsential •{" "}
               <Link href={"/terms"} className="hover:underline">
                 Terms of Service
@@ -64,16 +63,18 @@ export default function Footer() {
           </div>
 
           {/* Column 2 */}
-          <div className="text-center md:text-right">
-            <div className="flex justify-center md:justify-end">
-              <Image src={TheNewStackLogo} alt="" width={200} height={200} />
+          <div className="text-center md:text-right flex flex-col mt-6 md:mt-0 items-center md:items-end">
+            <div className="flex bg-white p-3 rounded-2xl w-fit  ">
+              <Image src={saulogo} alt="" width={50} height={50} />
             </div>
             <div className="my-5">
-              The top DevOps resource for Kubernetes, <br /> cloud-native
-              computing, and large-scale <br /> development and deployment.
+              สถาบันอุดมศึกษาชั้นนำที่มุ่งเน้นการผลิตบัณฑิตด้าน <br /> เทคโนโลยีและนวัตกรรม
+              มุ่งสร้างผู้เชี่ยวชาญ <br /> ที่มีทักษะตอบโจทย์ตลาดงานสมัยใหม่ <br />
+              พร้อมขับเคลื่อนสังคมด้วยความรู้ที่เป็นเลิศ
             </div>
-            <div className="">DevOps • Kubernetes • Cloud-Native</div>
+            <div className=" text-xs font-medium text-gray-500 tracking-wide uppercase">Technology • Innovation • Excellence</div>
           </div>
+          
         </div>
       </div>
     </footer>
