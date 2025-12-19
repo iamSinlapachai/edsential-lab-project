@@ -11,7 +11,7 @@ body {
   /* ป้องกันการเลื่อนทะลุขอบใน iPhone (Bounce Effect) */
   overscroll-behavior: none; 
   
-  overflow: hidden;
+  overflow-x: hidden;
   
   /* กำหนดความสูงให้พอดีจอเสมอ */
   height: 100%;

@@ -5,14 +5,10 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabaseClient"; // ตรวจสอบ path ให้ตรงกับโปรเจกต์
 import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
-import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
-
 
 export default async function SignInPage() {
   const router = useRouter();
   const supabase = createClient();
-  const cookieStore = await cookies();
 
   // 1. State Management
   const [formData, setFormData] = useState({

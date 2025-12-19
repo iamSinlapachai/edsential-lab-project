@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { createClient } from "@/lib/supabaseClient"; 
-import { User } from "@supabase/supabase-js"; 
+import { createClient } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js";
 import Avatar from "@mui/material/Avatar";
 import { deepPurple } from "@mui/material/colors";
 import { Loader2, LogOut, Flame } from "lucide-react";
@@ -85,12 +85,21 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-[#0F1117] sticky top-0 z-100 border-b border-gray-800">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
-        
-        {/* Logo */}
+
+        {/* Logo Section */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
-            <Image src={EdsentialLogo} alt="Edsential Logo" width={28} height={28} />
-            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
+            {/* ปรับขนาด Image: ปกติ 22px (มือถือ), หน้าจอใหญ่ขึ้นไปเป็น 28px */}
+            <Image
+              src={EdsentialLogo}
+              alt="Edsential Logo"
+              width={28}
+              height={28}
+              className="w-6 h-6 md:w-7 md:h-7 transition-all"
+            />
+
+            {/* ปรับขนาด Text: ปกติ text-lg (มือถือ), หน้าจอใหญ่ขึ้นไปเป็น text-xl */}
+            <h1 className="text-l md:text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight transition-all">
               Edsential
             </h1>
           </Link>
@@ -101,11 +110,11 @@ export default function Navbar() {
           {loading ? (
             <Loader2 className="animate-spin text-gray-500" size={20} />
           ) : !user ? (
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <Link href="/signin" className="text-sm font-medium text-gray-300 hover:text-white px-4 py-2">
                 Log in
               </Link>
-              <Link href="/signup" className="text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-500 px-5 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">
+              <Link href="/signup" className="text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-500 px-4 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">
                 Sign up
               </Link>
             </div>
