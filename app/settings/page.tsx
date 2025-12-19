@@ -53,12 +53,12 @@ export default function SettingsPage() {
     >
       <div className="space-y-8">
         {/* Appearance Section */}
-        <section className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-8">
+        {/* <section className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-8">
           <h2 className="text-lg font-semibold text-white mb-5 flex items-center border-b border-gray-800 pb-2">
             <Moon className="w-4 h-4 mr-2 text-pink-500" /> การแสดงผล
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Light Mode */}
+            {/* Light Mode 
             <button
               onClick={() => setTheme("light")}
               className={`p-3 border rounded-xl transition-all text-left group ${
@@ -84,7 +84,7 @@ export default function SettingsPage() {
               </div>
             </button>
 
-            {/* Dark Mode */}
+            {/* Dark Mode 
             <button
               onClick={() => setTheme("dark")}
               className={`p-3 rounded-xl transition-all text-left ${
@@ -110,7 +110,7 @@ export default function SettingsPage() {
               </div>
             </button>
 
-            {/* System Mode */}
+            {/* System Mode 
             <button
               onClick={() => setTheme("system")}
               className={`p-3 rounded-xl transition-all text-left ${
@@ -136,7 +136,7 @@ export default function SettingsPage() {
               </div>
             </button>
           </div>
-        </section>
+        </section> */}
 
         {/* Notifications Section */}
         <section className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-8">
