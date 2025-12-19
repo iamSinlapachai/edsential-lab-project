@@ -5,7 +5,8 @@
 import Link from "next/link";
 import { 
     Settings, User, Globe, FileText, Lock, 
-    Search, Mail, Github, Bookmark, Code, Menu, X
+    Search, Mail, Github, Bookmark, Code, Menu, X,
+    BarChart3
 } from "lucide-react";
 import { useState } from "react"; 
 import GradientBG from "@/components/gradient-bg";
@@ -36,7 +37,7 @@ const menuGroups = [
     title: "บัญชี",
     links: [
       { name: "โปรไฟล์", href: "/settings/profile", icon: User }, 
-      { name: "Edsential", href: "/settings/edsential", icon: User }, 
+      { name: "Edsential Progress", href: "/settings/edsential", icon: BarChart3 }, 
       { name: "ตั้งค่า", href: "/settings/", icon: Settings },
     ],
   },
@@ -159,7 +160,7 @@ export default function ProfilePage() {
         )}
 
         {/* 4. Main Content Area */}
-        <main className="flex-1 p-6 md:p-6 overflow-x-hidden">
+        <main className="flex-1 p-6 md:p-12 overflow-x-hidden">
           
           <div className="flex justify-between items-center mb-6 border-b border-gray-800 pb-4">
               <h1 className="text-2xl md:text-3xl font-bold text-white">

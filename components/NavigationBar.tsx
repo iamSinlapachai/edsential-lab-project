@@ -30,7 +30,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-3 group">
             {/* ปรับ tracking-widest ตามที่คุณเคยถามเพื่อความสวยงาม */}
             <h1 className="font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
-              Edsential Lab
+              Edsential
             </h1>
           </Link>
         </div>

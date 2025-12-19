@@ -1,41 +1,81 @@
-import React from 'react'
-import Link from 'next/link'
-import Image from 'next/image'
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
+  const TheNewStackLogo = "https://roadmap.sh/img/tns-sm.png";
 
-    const TheNewStackLogo = "https://roadmap.sh/img/tns-sm.png";
+  return (
+    <footer className="bg-[#161b21] text-gray-300 py-10 ">
+      <div className="container mx-auto px-8 max-w-7xl flex flex-col ">
+        <div className="mx-auto mb-8 font-semibold grid grid-cols-2 gap-y-4 gap-x-6 text-center sm:grid-cols-3 md:flex md:gap-x-8 md:justify-center">
+          <div>
+            <Link href={"/"} className="hover:underline">
+              Edsential
+            </Link>
+          </div>
+          <div>
+            <Link href={"/aboutus"} className="hover:underline">
+              About Us
+            </Link>
+          </div>
+          <div>
+            <Link href={"/"} className="hover:underline">
+              Guides
+            </Link>
+          </div>
+          <div>
+            <Link href={"/"} className="hover:underline">
+              FAQs
+            </Link>
+          </div>
+          <div>
+            <Link href={"/"} className="hover:underline">
+              Youtube
+            </Link>
+          </div>
+        </div>
 
-    return (
-        <footer className='bg-[#161b21] text-gray-300 py-10 '>
-            <div className='container mx-auto px-8 max-w-7xl flex flex-col ' >
-
-                <div className="mx-auto mb-8 font-semibold grid grid-cols-2 gap-y-4 gap-x-6 text-center sm:grid-cols-3 md:flex md:gap-x-8 md:justify-center">
-                    <div><Link href={"/"}>Edsential Lab</Link></div>
-                    <div><Link href={"/aboutus"}>About Us</Link></div>
-                    <div><Link href={"/"}>Guides</Link></div>
-                    <div><Link href={"/"}>FAQs</Link></div>
-                    <div><Link href={"/"}>Youtube</Link></div>
-                </div>
-
-                <div className='flex flex-col md:flex-row mx-auto md:mx-0 text-center md:text-start justify-center md:justify-between '>
-
-                    {/* Column 1 */}
-                    <div className='mb-10 md:mb-0'>
-                        <div className='text-white'><span className='font-bold'>Edsential Lab</span> <span className='mx-2'> by </span><span className='bg-purple-600 text-white p-1.5 rounded-xl'>@Edsential Team</span></div>
-                        <div className='font-light my-5'>Edsential Lab created for best practices, projects, <br /> artcles, resources and journeys to help you choose your <br /> path and grow in your career</div>
-                        <div className='font-light'>© Edsential Lab • <Link href={"/terms"}>Terms of Service</Link> • <Link href={"/privacy"}>Privacy Policy</Link> </div>
-                    </div>
-
-                    {/* Column 2 */}
-                    <div className='text-center md:text-right'>
-                        <div className='flex justify-center md:justify-end'><Image src={TheNewStackLogo} alt="" width={200} height={200} /></div>
-                        <div className='my-5'>The top DevOps resource for Kubernetes, <br /> cloud-native computing, and large-scale <br /> development and deployment.</div>
-                        <div className=''>DevOps • Kubernetes • Cloud-Native</div>
-                    </div>
-
-                </div>
+        <div className="flex flex-col md:flex-row mx-auto md:mx-0 text-center md:text-start justify-center md:justify-between ">
+          {/* Column 1 */}
+          <div className="mb-10 md:mb-0">
+            <div className="text-white">
+              <span className="font-bold">Edsential</span>{" "}
+              <span className="mx-2"> by </span>
+              <span className="bg-purple-600 text-white p-1.5 rounded-xl">
+                @Edsential Team
+              </span>
             </div>
-        </footer>
-    )
+            <div className="font-light my-5">
+              Edsential created for best practices, projects, <br /> artcles,
+              resources and journeys to help you choose your <br /> path and
+              grow in your career
+            </div>
+            <div className="font-light">
+              © Edsential •{" "}
+              <Link href={"/terms"} className="hover:underline">
+                Terms of Service
+              </Link>{" "}
+              •{" "}
+              <Link href={"/privacy"} className="hover:underline">
+                Privacy Policy
+              </Link>
+            </div>
+          </div>
+
+          {/* Column 2 */}
+          <div className="text-center md:text-right">
+            <div className="flex justify-center md:justify-end">
+              <Image src={TheNewStackLogo} alt="" width={200} height={200} />
+            </div>
+            <div className="my-5">
+              The top DevOps resource for Kubernetes, <br /> cloud-native
+              computing, and large-scale <br /> development and deployment.
+            </div>
+            <div className="">DevOps • Kubernetes • Cloud-Native</div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
 }

@@ -1,22 +1,40 @@
-// app/settings/edsential/page.tsx
+// app/settings/Edsential/page.tsx
 
 "use client";
 
 import Link from "next/link";
 import { 
-    Settings, User, Lock, Bell, Moon, 
-    Zap, Globe, FileText, Menu, X, ShieldCheck
+    Settings, User, Globe, FileText, Lock, 
+    BarChart3, CheckCircle2, Clock, Trophy, 
+    Menu, X, Target, Zap
 } from "lucide-react";
 import { useState } from "react"; 
 import GradientBG from "@/components/gradient-bg";
 
+// *** 1. ข้อมูล Progress ตัวอย่าง ***
+const progressStats = {
+  overall: 75,
+  completedTasks: 24,
+  inProgress: 12,
+  hoursSpent: 156,
+  achievements: 8
+};
+
+const learningPath = [
+  { id: 1, name: "Fundamentals of Web Development", progress: 100, status: "Completed" },
+  { id: 2, name: "Advanced React Patterns", progress: 65, status: "In Progress" },
+  { id: 3, name: "Backend Architecture & Database", progress: 20, status: "Started" },
+  { id: 4, name: "DevOps & Cloud Deployment", progress: 0, status: "Locked" },
+];
+
+// *** 2. เมนู Sidebar (เหมือนเดิมเพื่อให้คงเส้นคงวา) ***
 const menuGroups = [
   {
     title: "บัญชี",
     links: [
       { name: "โปรไฟล์", href: "/settings/profile", icon: User }, 
-      { name: "Edsential", href: "/settings/edsential", icon: User }, 
-      { name: "ตั้งค่า", href: "/settings/", icon: Settings }, 
+      { name: "Edsential Progress", href: "/settings/edsential", icon: BarChart3 }, 
+      { name: "ตั้งค่า", href: "/settings/", icon: Settings },
     ],
   },
   {
@@ -40,87 +58,69 @@ const SidebarLink = ({ name, href, Icon, isActive, onClick }) => (
       }
     `}
   >
-    <Icon className="w-5 h-5 mr-3 flex-shrink-0" />
-    <span className="truncate">{name}</span>
+    <Icon className="w-5 h-5 mr-3" />
+    {name}
   </Link>
 );
 
-const ToggleSwitch = ({ label, description, isChecked, onChange }) => (
-    <div className="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
-        <div className="pr-2">
-            <p className="font-medium text-white text-sm md:text-base">{label}</p>
-            <p className="text-[11px] md:text-sm text-gray-500 leading-relaxed">{description}</p>
-        </div>
-        <label className="relative inline-flex items-center cursor-pointer flex-shrink-0 scale-10 md:scale-100">
-            <input 
-                type="checkbox" 
-                checked={isChecked}
-                onChange={onChange}
-                className="sr-only peer" 
-            />
-            <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
-        </label>
-    </div>
-);
-
-export default function SettingsPage() {
+export default function ProgressPage() {
   const currentPath = "/settings/edsential"; 
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
+  
   return (
-    <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white overflow-x-hidden">
+    <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white">
       <GradientBG />
-      
-      {/* 1. Mobile Top Bar - Sticky */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-[#161b22]/80 backdrop-blur-md border-b border-gray-800 sticky top-0 w-full">
-        <h2 className="text-white font-bold flex items-center text-sm">
-          <Settings className="w-4 h-4 mr-2 text-purple-400" /> ตั้งค่า
+
+      {/* 1. Mobile Top Bar */}
+      <div className="lg:hidden flex items-center justify-between p-4 bg-[#161b22] border-b border-gray-800 sticky top-0 w-full">
+        <h2 className="text-white font-bold flex items-center">
+          <BarChart3 className="w-5 h-5 mr-2 text-purple-400" /> ความคืบหน้า
         </h2>
         <button 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-1.5 text-gray-400 hover:text-white bg-gray-800/50 rounded-md transition-colors"
+          className="p-2 text-gray-400 hover:text-white transition-colors relative z-[101]"
         >
-          {isSidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </div>
 
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row h-full relative">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row h-full relative z-10">
         
-        {/* 2. Sidebar Navigation - Responsive Drawer */}
+        {/* 2. Sidebar Navigation */}
         <aside className={`
-          fixed inset-y-0 left-0 z-[90] w-72 bg-[#161b22] transition-transform duration-300 transform 
-          lg:translate-x-0 lg:static lg:block lg:w-64 lg:min-h-screen lg:bg-transparent lg:p-6
+          fixed inset-y-0 left-0 z-[90] w-64 bg-[#161b22] transition-transform duration-300 transform 
+          lg:translate-x-0 lg:static lg:block lg:h-screen lg:rounded-3xl lg:my-6 lg:ml-4
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
-          border-r border-gray-800 lg:border-none flex flex-col p-5 shadow-2xl lg:shadow-none
+          border-r border-gray-800 flex flex-col p-4 shadow-2xl lg:shadow-none
         `}>
-          <div className="hidden lg:flex items-center mb-8 px-2">
-            <h2 className="text-xl font-bold text-white flex items-center">
+          <div className="flex items-center justify-between border-b border-gray-800 pb-4 mb-4 pt-2">
+            <h2 className="text-lg font-bold text-white flex items-center">
                 <Settings className="w-5 h-5 mr-2 text-purple-400" /> 
-                ตั้งค่าบัญชี
+                เมนูบัญชี
             </h2>
+            <button className="lg:hidden text-gray-400 p-1" onClick={() => setIsSidebarOpen(false)}>
+                <X size={20} />
+            </button>
           </div>
 
-          <nav className="flex-1 space-y-8 lg:bg-[#161b22] lg:p-4 lg:rounded-2xl lg:border lg:border-gray-800">
-            <div>
-                <p className="text-[10px] uppercase text-gray-500 font-bold mb-3 px-3 tracking-[0.1em]">บัญชีส่วนตัว</p>
-                <div className="space-y-1">
-                    {menuGroups[0].links.map((link) => (
-                        <SidebarLink
-                          key={link.name}
-                          name={link.name}
-                          href={link.href}
-                          Icon={link.icon}
-                          isActive={currentPath === link.href}
-                          onClick={() => setIsSidebarOpen(false)}
-                        />
-                    ))}
-                </div>
+          <nav className="flex-1 overflow-y-auto space-y-6">
+            <div className="space-y-1">
+                {menuGroups[0].links.map((link) => (
+                    <SidebarLink
+                      key={link.name}
+                      name={link.name}
+                      href={link.href}
+                      Icon={link.icon}
+                      isActive={currentPath === link.href}
+                      onClick={() => setIsSidebarOpen(false)}
+                    />
+                ))}
             </div>
             
-            <div className="pt-4">
-                <p className="text-[10px] uppercase text-gray-500 font-bold mb-3 px-3 tracking-[0.1em]">{menuGroups[1].title}</p>
+            <div className="pt-4 border-t border-gray-800">
+                <h3 className="text-xs uppercase text-gray-500 font-semibold mb-2 tracking-wider">
+                    {menuGroups[1].title}
+                </h3>
                 <div className="space-y-1">
                     {menuGroups[1].links.map((link) => (
                         <SidebarLink
@@ -134,117 +134,109 @@ export default function SettingsPage() {
                     ))}
                 </div>
             </div>
+
+            <div className="pt-6 border-t border-gray-800 mt-6">
+                <p className="text-sm font-medium text-gray-500">มีคำถาม?</p>
+                <Link href="/support" className="text-sm text-purple-400 hover:underline">
+                    ศูนย์ช่วยเหลือ
+                </Link>
+            </div>
           </nav>
         </aside>
 
-        {/* 3. Mobile Overlay */}
+        {/* 3. Overlay */}
         {isSidebarOpen && (
-          <div 
-            className="fixed inset-0 bg-black/70 z-[80] lg:hidden backdrop-blur-sm transition-opacity"
-            onClick={() => setIsSidebarOpen(false)}
-          />
+          <div className="fixed inset-0 bg-black/60 z-[80] lg:hidden backdrop-blur-sm" onClick={() => setIsSidebarOpen(false)} />
         )}
-                    
+
         {/* 4. Main Content Area */}
-        <main className="flex-1 p-5 md:p-8 lg:p-12 z-10">
-          <header className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">ตั้งค่า</h1>
-            <p className="text-xs md:text-base text-gray-400">
-              จัดการความชอบส่วนตัวและความปลอดภัยของบัญชีคุณ
-            </p>
-          </header>
-
-          <div className="space-y-6 md:space-y-10">
-            
-            {/* Appearance Section */}
-            <section className="bg-[#161b22] border border-gray-800 rounded-2xl p-5 md:p-8 shadow-sm">
-                <h2 className="text-base md:text-xl font-semibold text-white mb-5 flex items-center">
-                    <Moon className="w-5 h-5 mr-2 text-pink-400" /> การแสดงผล
-                </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <button className="p-3 border border-gray-700 rounded-xl bg-[#0F1117] hover:border-purple-500 transition-all text-left group">
-                        <div className="h-14 md:h-20 bg-gray-200 border border-gray-400 rounded-lg flex items-center justify-center mb-3">
-                            <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">Light</span>
-                        </div>
-                        <div className="flex items-center text-xs md:text-sm font-medium text-white">
-                            <div className="w-3 h-3 rounded-full border border-gray-500 mr-2" /> System (Light)
-                        </div>
-                    </button>
-
-                    <button 
-                        onClick={() => setDarkModeEnabled(true)}
-                        className={`p-3 rounded-xl transition-all text-left ${darkModeEnabled ? 'border-2 border-purple-500 bg-[#1e222e]' : 'border border-gray-700 bg-[#0F1117]'}`}
-                    >
-                        <div className="h-14 md:h-20 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center mb-3">
-                            <span className="text-[10px] text-gray-400 font-bold uppercase tracking-tighter">Dark</span>
-                        </div>
-                        <div className="flex items-center text-xs md:text-sm font-medium text-white">
-                            <div className={`w-3 h-3 rounded-full mr-2 ${darkModeEnabled ? 'bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]' : 'border border-gray-500'}`} />
-                            System (Dark)
-                        </div>
-                    </button>
-                </div>
-            </section>
-
-            {/* Notifications Section */}
-            <section className="bg-[#161b22] border border-gray-800 rounded-2xl p-5 md:p-8 shadow-sm">
-                <h2 className="text-base md:text-xl font-semibold text-white mb-2 flex items-center">
-                    <Bell className="w-5 h-5 mr-2 text-purple-400" /> การแจ้งเตือน
-                </h2>
-                <ToggleSwitch
-                    label="แจ้งเตือนกิจกรรม"
-                    description="รับการแจ้งเตือนความคืบหน้าผ่านแอปและอีเมล"
-                    isChecked={notificationsEnabled}
-                    onChange={() => setNotificationsEnabled(!notificationsEnabled)}
-                />
-            </section>
-
-            {/* Security Section */}
-            <section className="bg-[#161b22] border border-gray-800 rounded-2xl p-5 md:p-8 shadow-sm">
-                <h2 className="text-base md:text-xl font-semibold text-white mb-4 flex items-center">
-                    <Lock className="w-5 h-5 mr-2 text-cyan-400" /> ความปลอดภัย
-                </h2>
-                
-                <div className="flex justify-between items-center py-4 border-b border-gray-800 last:border-b-0">
-                    <div className="pr-4">
-                        <p className="font-medium text-white text-sm md:text-base">รหัสผ่าน</p>
-                        <p className="text-[11px] md:text-sm text-gray-500">เปลี่ยนรหัสผ่านล่าสุดเมื่อ 3 เดือนที่แล้ว</p>
-                    </div>
-                    <button className="flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors">
-                        เปลี่ยน
-                    </button>
-                </div>
-
-                <div className="flex justify-between items-center py-4 border-b border-gray-800 last:border-b-0">
-                    <div className="pr-4">
-                        <p className="font-medium text-white text-sm md:text-base flex items-center">
-                            <ShieldCheck className="w-4 h-4 mr-1 text-green-400 flex-shrink-0" /> ยืนยัน 2 ชั้น (2FA)
-                        </p>
-                        <p className="text-[11px] md:text-sm text-gray-500">เพิ่มความปลอดภัยอีกระดับ</p>
-                    </div>
-                    <button className="flex-shrink-0 px-4 py-1.5 bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-500/30 rounded-lg text-xs md:text-sm transition-colors font-medium">
-                        ตั้งค่า
-                    </button>
-                </div>
-            </section>
-
-            {/* Danger Zone */}
-            <section className="bg-red-500/5 border border-red-500/20 rounded-2xl p-5 md:p-8 mb-10">
-                <h2 className="text-base md:text-xl font-semibold text-red-500 mb-4 flex items-center">
-                    <Zap className="w-4 h-4 mr-2" /> โซนอันตราย
-                </h2>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div>
-                        <p className="font-medium text-red-400 text-sm md:text-base">ลบบัญชีผู้ใช้</p>
-                        <p className="text-[11px] md:text-sm text-gray-500">ข้อมูลทั้งหมดจะถูกลบถาวรและไม่สามารถกู้คืนได้</p>
-                    </div>
-                    <button className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20">
-                        ลบบัญชี
-                    </button>
-                </div>
-            </section>
-
+        <main className="flex-1 p-6 md:p-12 overflow-x-hidden">
+          
+          <div className="flex justify-between items-center mb-10 border-b border-gray-800 pb-4">
+              <h1 className="text-2xl md:text-3xl font-bold text-white">
+                ความคืบหน้าการเรียน
+              </h1>
+              <div className="flex items-center space-x-2 bg-purple-600/20 text-purple-300 px-3 py-1 rounded-full border border-purple-500/30">
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span className="text-sm font-bold">LV. 12</span>
+              </div>
           </div>
+
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
+            {[
+              { label: "สำเร็จแล้ว", value: progressStats.completedTasks, icon: CheckCircle2, color: "text-green-400" },
+              { label: "กำลังเรียน", value: progressStats.inProgress, icon: Clock, color: "text-blue-400" },
+              { label: "ชั่วโมงเรียน", value: progressStats.hoursSpent, icon: BarChart3, color: "text-purple-400" },
+              { label: "รางวัล", value: progressStats.achievements, icon: Trophy, color: "text-yellow-400" },
+            ].map((stat, i) => (
+              <div key={i} className="bg-[#161b22] border border-gray-800 rounded-xl p-4 flex flex-col items-center justify-center text-center">
+                <stat.icon className={`w-6 h-6 mb-2 ${stat.color}`} />
+                <span className="text-2xl font-bold text-white">{stat.value}</span>
+                <span className="text-xs text-gray-500 uppercase font-medium">{stat.label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Main Progress Card */}
+          <div className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-8 mb-10">
+            <h2 className="text-lg font-semibold text-white mb-6 flex items-center">
+                <Target className="w-5 h-5 mr-2 text-pink-500"/> เส้นทางการเรียนรู้ (Learning Path)
+            </h2>
+            
+            <div className="space-y-8">
+                {learningPath.map((item) => (
+                    <div key={item.id} className="relative">
+                        <div className="flex justify-between items-center mb-2">
+                            <span className={`text-sm font-medium ${item.progress === 100 ? 'text-green-400' : 'text-gray-300'}`}>
+                                {item.name}
+                            </span>
+                            <span className="text-xs text-gray-500 font-mono">{item.progress}%</span>
+                        </div>
+                        {/* Progress Bar Container */}
+                        <div className="w-full h-2 bg-gray-800 rounded-full overflow-hidden">
+                            <div 
+                                className={`h-full transition-all duration-1000 ease-out ${
+                                    item.progress === 100 
+                                    ? 'bg-green-500' 
+                                    : 'bg-gradient-to-r from-purple-500 to-pink-500'
+                                }`}
+                                style={{ width: `${item.progress}%` }}
+                            />
+                        </div>
+                        <p className="text-[10px] mt-2 text-gray-500 font-medium uppercase tracking-wider italic">
+                            Status: {item.status}
+                        </p>
+                    </div>
+                ))}
+            </div>
+          </div>
+
+          {/* Activity / Timeline Section */}
+          <div className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-8">
+            <h2 className="text-lg font-semibold text-white mb-6 flex items-center">
+                <BarChart3 className="w-5 h-5 mr-2 text-purple-500"/> กิจกรรมล่าสุด
+            </h2>
+            <div className="space-y-6">
+                {[
+                  { date: "วันนี้", task: "จบหัวข้อ Advanced React Patterns", xp: "+250 XP" },
+                  { date: "เมื่อวาน", task: "เริ่มเรียน Backend Architecture", xp: "+50 XP" },
+                  { date: "2 วันที่แล้ว", task: "ทำแบบทดสอบ Fundamentals ผ่าน", xp: "+500 XP" },
+                ].map((log, i) => (
+                    <div key={i} className="flex items-start space-x-4">
+                        <div className="mt-1.5 w-2 h-2 rounded-full bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]" />
+                        <div className="flex-1 border-b border-gray-800/50 pb-4">
+                            <p className="text-sm font-medium text-white">{log.task}</p>
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-gray-500">{log.date}</span>
+                                <span className="text-[10px] font-bold text-green-400">{log.xp}</span>
+                            </div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+          </div>
+
         </main>
       </div>
     </div>
