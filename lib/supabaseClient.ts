@@ -1,6 +1,13 @@
-import { createClient } from '@supabase/supabase-js'
+//edsential-lab-project\lib\supabaseClient.ts
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL as string
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY as string
+// lib/supabaseClient.ts
 
-export const supabase = createClient(supabaseUrl, supabaseKey)
+import { createBrowserClient } from '@supabase/ssr'
+
+// สร้างเป็น Function เพื่อเรียกใช้ใน Client Component
+export function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
