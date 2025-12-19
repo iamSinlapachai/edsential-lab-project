@@ -1,9 +1,12 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 /* html {
   scrollbar-gutter: stable;
 } */
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   font-family: var(--font-prompt), sans-serif;

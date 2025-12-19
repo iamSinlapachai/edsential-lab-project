@@ -1,7 +1,7 @@
-// app/(other)/privacy/page.tsx
+"use client";
 
-import Link from "next/link";
-import { ArrowLeft, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import SettingsShell from "@/components/settings-shell";
 
 // เนื้อหาจำลองสำหรับ Privacy Policy (เหมือนเดิม)
 interface PrivacyDetail {
@@ -69,85 +69,65 @@ const privacyContent: { effectiveDate: string; sections: PrivacySection[] } = {
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-screen bg-[#0F1117] text-gray-300  selection:bg-[#7b4dff] selection:text-white pb-10 md:pb-20">
-      <div className="flex flex-col items-center justify-center">
-        {/* Header และ Back Button Area */}
-        {/* ปรับให้ใช้ max-w-7xl และ px-8 เหมือนส่วนใหญ่ของเว็บคุณ */}
-        <div className="max-w-7xl w-full pt-8 md:pt-12 px-4 md:px-8">
-          <Link
-            // แก้ไข href ให้กลับไปยังพาธหลักของ Settings (เช่น /settings) หากไม่มีโฟลเดอร์อื่นซ้อนทับ
-            href="/settings/profile" // กลับไปยังหน้าตั้งค่า
-            className="inline-flex items-center text-gray-400 hover:text-purple-400 transition-colors mb-6"
+    <SettingsShell title="นโยบายความเป็นส่วนตัว">
+      <div className="space-y-8">
+        <p className="text-sm text-gray-500 border-b border-gray-800 pb-4">
+          อัปเดตล่าสุด: {privacyContent.effectiveDate}
+        </p>
+
+        {privacyContent.sections.map((section, index) => (
+          <section
+            key={index}
+            className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-6 shadow-lg"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            กลับไปที่โปรไฟล์
-          </Link>
+            <h2 className="text-xl font-semibold text-white mb-3 border-b border-gray-700/50 pb-2 flex items-center">
+              <Lock className="w-5 h-5 mr-2 text-pink-500" />
+              {section.title}
+            </h2>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-2 tracking-tight">
-            นโยบายความเป็นส่วนตัว
-          </h1>
-          <p className="text-sm text-gray-500 mb-8 border-b border-gray-800 pb-4">
-            อัปเดตล่าสุด: {privacyContent.effectiveDate}
-          </p>
-        </div>
+            <p className="text-gray-400 leading-relaxed text-sm mb-4">
+              {section.summary}
+            </p>
 
-        {/* Content Area */}
-        {/* ใช้ max-w-7xl/4xl และจัดกึ่งกลางให้สอดคล้องกัน */}
-        <div className="max-w-4xl w-full px-4 md:px-8 space-y-8">
-          {privacyContent.sections.map((section, index) => (
-            <section
-              key={index}
-              className="bg-[#161b22] border border-gray-800 rounded-xl p-5 md:p-6 shadow-lg"
-            >
-              <h2 className="text-xl font-semibold text-white mb-3 border-b border-gray-700/50 pb-2 flex items-center">
-                <Lock className="w-5 h-5 mr-2 text-pink-500" />
-                {section.title}
-              </h2>
-
-              <p className="text-gray-400 leading-relaxed text-sm mb-4">
-                {section.summary}
-              </p>
-
-              {/* แสดงรายละเอียด (details) ถ้ามี */}
-              {section.details && (
-                <ul className="space-y-3 pt-2">
-                  {section.details.map((detail, detailIndex) => (
-                    <li key={detailIndex}>
-                      {detail.subtitle && (
-                        <h4 className="font-semibold text-gray-300 text-sm mb-1">
-                          {detail.subtitle}
-                        </h4>
-                      )}
-                      {detail.content && (
-                        <p
-                          className={`text-gray-400 text-sm ${
-                            detail.subtitle ? "pl-4" : ""
-                          }`}
-                        >
+            {/* แสดงรายละเอียด (details) ถ้ามี */}
+            {section.details && (
+              <ul className="space-y-3 pt-2">
+                {section.details.map((detail, detailIndex) => (
+                  <li key={detailIndex}>
+                    {detail.subtitle && (
+                      <h4 className="font-semibold text-gray-300 text-sm mb-1">
+                        {detail.subtitle}
+                      </h4>
+                    )}
+                    {detail.content && (
+                      <p
+                        className={`text-gray-400 text-sm ${
+                          detail.subtitle ? "pl-4" : ""
+                        }`}
+                      >
+                        {detail.content}
+                      </p>
+                    )}
+                    {/* ใช้ list-disc สำหรับรายการย่อย (เช่นใน Section 4) */}
+                    {!detail.subtitle && detail.content && (
+                      <div className="flex items-start">
+                        <span className="text-purple-400 mr-2">•</span>
+                        <p className="text-gray-400 text-sm">
                           {detail.content}
                         </p>
-                      )}
-                      {/* ใช้ list-disc สำหรับรายการย่อย (เช่นใน Section 4) */}
-                      {!detail.subtitle && detail.content && (
-                        <div className="flex items-start">
-                          <span className="text-purple-400 mr-2">•</span>
-                          <p className="text-gray-400 text-sm">
-                            {detail.content}
-                          </p>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
-          ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        ))}
 
-          <div className="pt-6 text-center text-gray-500 text-sm">
-            การใช้บริการเว็บไซต์นี้ของคุณถือว่าเป็นการยอมรับนโยบายความเป็นส่วนตัวนี้
-          </div>
+        <div className="pt-6 text-center text-gray-500 text-sm">
+          การใช้บริการเว็บไซต์นี้ของคุณถือว่าเป็นการยอมรับนโยบายความเป็นส่วนตัวนี้
         </div>
       </div>
-    </div>
+    </SettingsShell>
   );
 }

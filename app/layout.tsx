@@ -5,6 +5,7 @@ import Footer from "@/components/Footer";
 import Navbar from "@/components/NavigationBar";
 import AOSAnimate from "@/components/aos-animate";
 import EdIcon from "@/assets/icon/EdsentialLab.png";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const prompt = Prompt({
   variable: "--font-prompt",
@@ -14,7 +15,8 @@ const prompt = Prompt({
 
 export const metadata: Metadata = {
   title: "Edsential Lab - Career Roadmaps and Learning Resources",
-  description: "Edsential Lab is your gateway to comprehensive career roadmaps and curated learning resources, designed to empower your journey in the tech world.",
+  description:
+    "Edsential Lab is your gateway to comprehensive career roadmaps and curated learning resources, designed to empower your journey in the tech world.",
   icons: {
     icon: "/favicon.ico",
   },
@@ -29,15 +31,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${prompt.variable} antialiased`}
-      >
-        <Navbar />
-        {children}
-        <AOSAnimate />
-        <Footer />
-
+    <html lang="en" suppressHydrationWarning>
+      <body className={`${prompt.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Navbar />
+          {children}
+          <AOSAnimate />
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

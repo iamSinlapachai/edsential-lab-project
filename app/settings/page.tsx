@@ -15,8 +15,9 @@ import {
   ShieldCheck,
   BarChart3,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import GradientBG from "@/components/gradient-bg";
+import { useTheme } from "next-themes";
 
 // *** 1. ข้อมูลเมนูใน Sidebar (ใช้ชุดเดียวกับ Profile) ***
 const menuGroups = [
@@ -43,7 +44,21 @@ const menuGroups = [
 ];
 
 // *** 2. Sidebar Link Component (สไตล์เดียวกับ Profile) ***
-const SidebarLink = ({ name, href, Icon, isActive, onClick }) => (
+interface SidebarLinkProps {
+  name: string;
+  href: string;
+  Icon: React.ElementType;
+  isActive: boolean;
+  onClick: () => void;
+}
+
+const SidebarLink = ({
+  name,
+  href,
+  Icon,
+  isActive,
+  onClick,
+}: SidebarLinkProps) => (
   <Link
     href={href}
     onClick={onClick}
@@ -60,7 +75,19 @@ const SidebarLink = ({ name, href, Icon, isActive, onClick }) => (
   </Link>
 );
 
-const ToggleSwitch = ({ label, description, isChecked, onChange }) => (
+interface ToggleSwitchProps {
+  label: string;
+  description: string;
+  isChecked: boolean;
+  onChange: () => void;
+}
+
+const ToggleSwitch = ({
+  label,
+  description,
+  isChecked,
+  onChange,
+}: ToggleSwitchProps) => (
   <div className="flex items-center justify-between py-4 border-b border-gray-800 last:border-b-0">
     <div className="pr-2">
       <p className="font-medium text-white text-sm md:text-base">{label}</p>
@@ -83,8 +110,17 @@ const ToggleSwitch = ({ label, description, isChecked, onChange }) => (
 export default function SettingsPage() {
   const currentPath = "/settings/";
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [darkModeEnabled, setDarkModeEnabled] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // if (!mounted) {
+  //   return null;
+  // }
 
   return (
     <div className="min-h-screen bg-[#0F1117] text-gray-300 selection:bg-[#7b4dff] selection:text-white">
@@ -195,25 +231,40 @@ export default function SettingsPage() {
               <h2 className="text-lg font-semibold text-white mb-5 flex items-center border-b border-gray-800 pb-2">
                 <Moon className="w-4 h-4 mr-2 text-pink-500" /> การแสดงผล
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <button className="p-3 border border-gray-700 rounded-xl bg-[#0F1117] hover:border-purple-500 transition-all text-left group">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Light Mode */}
+                <button
+                  onClick={() => setTheme("light")}
+                  className={`p-3 border rounded-xl transition-all text-left group ${
+                    mounted && theme === "light"
+                      ? "border-purple-500 bg-[#1e222e]"
+                      : "border-gray-700 bg-[#0F1117] hover:border-purple-500/50"
+                  }`}
+                >
                   <div className="h-14 md:h-20 bg-gray-200 border border-gray-400 rounded-lg flex items-center justify-center mb-3">
                     <span className="text-[10px] text-gray-500 font-bold uppercase tracking-tighter">
                       Light
                     </span>
                   </div>
                   <div className="flex items-center text-xs md:text-sm font-medium text-white">
-                    <div className="w-3 h-3 rounded-full border border-gray-500 mr-2" />{" "}
-                    System (Light)
+                    <div
+                      className={`w-3 h-3 rounded-full mr-2 ${
+                        mounted && theme === "light"
+                          ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                          : "border border-gray-500"
+                      }`}
+                    />{" "}
+                    Light
                   </div>
                 </button>
 
+                {/* Dark Mode */}
                 <button
-                  onClick={() => setDarkModeEnabled(true)}
+                  onClick={() => setTheme("dark")}
                   className={`p-3 rounded-xl transition-all text-left ${
-                    darkModeEnabled
+                    mounted && theme === "dark"
                       ? "border-2 border-purple-500 bg-[#1e222e]"
-                      : "border border-gray-700 bg-[#0F1117]"
+                      : "border border-gray-700 bg-[#0F1117] hover:border-purple-500/50"
                   }`}
                 >
                   <div className="h-14 md:h-20 bg-gray-900 border border-gray-700 rounded-lg flex items-center justify-center mb-3">
@@ -224,12 +275,38 @@ export default function SettingsPage() {
                   <div className="flex items-center text-xs md:text-sm font-medium text-white">
                     <div
                       className={`w-3 h-3 rounded-full mr-2 ${
-                        darkModeEnabled
+                        mounted && theme === "dark"
                           ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"
                           : "border border-gray-500"
                       }`}
                     />
-                    System (Dark)
+                    Dark
+                  </div>
+                </button>
+
+                {/* System Mode */}
+                <button
+                  onClick={() => setTheme("system")}
+                  className={`p-3 rounded-xl transition-all text-left ${
+                    mounted && theme === "system"
+                      ? "border-2 border-purple-500 bg-[#1e222e]"
+                      : "border border-gray-700 bg-[#0F1117] hover:border-purple-500/50"
+                  }`}
+                >
+                  <div className="h-14 md:h-20 bg-gradient-to-br from-gray-200 to-gray-900 border border-gray-500 rounded-lg flex items-center justify-center mb-3">
+                    <span className="text-[10px] text-gray-600 font-bold uppercase tracking-tighter bg-white/50 px-2 py-0.5 rounded">
+                      System
+                    </span>
+                  </div>
+                  <div className="flex items-center text-xs md:text-sm font-medium text-white">
+                    <div
+                      className={`w-3 h-3 rounded-full mr-2 ${
+                        mounted && theme === "system"
+                          ? "bg-purple-500 shadow-[0_0_8px_rgba(168,85,247,0.5)]"
+                          : "border border-gray-500"
+                      }`}
+                    />
+                    System
                   </div>
                 </button>
               </div>
