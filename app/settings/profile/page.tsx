@@ -155,17 +155,20 @@ export default async function ProfilePage() {
               </span>
             </div>
 
-            {displayData.github && (
-              <a
-                href={`https://github.com/${displayData.github}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center text-gray-400 hover:text-purple-400 transition-colors group text-sm"
-              >
-                <Github className="w-4 h-4 mr-2 text-purple-500 group-hover:text-purple-400 flex-shrink-0" />
-                GitHub: <span className="ml-2">{displayData.github}</span>
-              </a>
-            )}
+            <a
+              href={
+                displayData.github
+                  ? `https://github.com/${displayData.github}`
+                  : "#"
+              }
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center text-gray-400 hover:text-purple-400 transition-colors group text-sm"
+            >
+              <Github className="w-4 h-4 mr-2 text-purple-500 group-hover:text-purple-400 flex-shrink-0" />
+              GitHub:{" "}
+              <span className="ml-2">{displayData.github || "ไม่ได้ระบุ"}</span>
+            </a>
           </div>
         </section>
       </div>

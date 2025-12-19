@@ -6,20 +6,33 @@ import { createClient } from "@/lib/supabaseClient"; // เรียกใช้
 import { User } from "@supabase/supabase-js"; // Type ของ User
 import Avatar from "@mui/material/Avatar";
 import { deepPurple } from "@mui/material/colors";
-import { Loader2, LogOut } from "lucide-react"; // เพิ่ม icon
+import { Loader2, LogOut, Flame } from "lucide-react";
 
 export default function Navbar() {
   const supabase = createClient();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true); // เพิ่ม state โหลดเพื่อกันหน้ากระพริบ
+  const [loading, setLoading] = useState(true);
+  const [streak, setStreak] = useState(0); // State เก็บค่า Streak
 
   useEffect(() => {
-    // 1. ฟังก์ชันดึงข้อมูล User ตอนโหลดหน้าเว็บครั้งแรก
+    // 1. ฟังก์ชันดึงข้อมูล User และ Streak ตอนโหลดหน้าเว็บครั้งแรก
     const getUser = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
+
       setUser(user);
+
+      if (user) {
+        // ดึงข้อมูล Streak จากตาราง profiles
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_streak")
+          .eq("id", user.id)
+          .single();
+
+        if (profile) setStreak(profile.current_streak || 0);
+      }
       setLoading(false);
     };
 
@@ -28,29 +41,40 @@ export default function Navbar() {
     // 2. Listener: คอยฟังว่ามีการ Login หรือ Logout เกิดขึ้นไหม (Real-time)
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((event, session) => {
-      // อัปเดต state ทันทีตาม session ที่ได้รับ
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
+
+      if (session?.user) {
+        // ถ้า Login ใหม่ ให้ดึง Streak อีกรอบเพื่อให้ชัวร์
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("current_streak")
+          .eq("id", session.user.id)
+          .single();
+        if (profile) setStreak(profile.current_streak || 0);
+      } else {
+        setStreak(0); // Reset ถ้า Logout
+      }
+
       setLoading(false);
     });
 
-    // Cleanup function เมื่อ component ถูกทำลาย
+    // Cleanup function
     return () => {
       subscription.unsubscribe();
     };
   }, [supabase]);
 
-  // ฟังก์ชัน Logout (แถมให้เผื่อใช้งาน)
+  // ฟังก์ชัน Logout
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    // ไม่ต้อง setUser(null) เอง เพราะ onAuthStateChange ด้านบนจะทำงานให้อัตโนมัติ
-    window.location.href = "/"; // Refresh หรือ Redirect กลับหน้าแรก
+    window.location.href = "/"; // Refresh กลับหน้าแรก
   };
 
   return (
     <nav className="w-full bg-[#0F1117] sticky top-0 z-50 border-b border-gray-800">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
-        {/* --- LEFT SIDE --- */}
+        {/* --- LEFT SIDE: Logo --- */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
             <h1 className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
@@ -59,12 +83,13 @@ export default function Navbar() {
           </Link>
         </div>
 
-        {/* --- RIGHT SIDE --- */}
+        {/* --- RIGHT SIDE: User Menu --- */}
         <div className="flex items-center gap-4">
-          {/* ถ้ากำลังโหลดสถานะ ให้โชว์ Loading หมุนๆ ไปก่อน */}
           {loading ? (
+            // Loading State
             <Loader2 className="animate-spin text-gray-500" size={20} />
           ) : !user ? (
+            // --- กรณี: ยังไม่ Login ---
             <div className="flex items-center gap-3">
               <Link
                 href="/signin"
@@ -81,13 +106,26 @@ export default function Navbar() {
               </Link>
             </div>
           ) : (
-            // --- กรณี: Login แล้ว (โชว์ Avatar) ---
+            // --- กรณี: Login แล้ว ---
             <div className="flex items-center gap-4">
+              {/* 🔥 Streak Display (เพิ่มส่วนนี้) */}
+              <div
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 select-none"
+                title="Current Day Streak"
+              >
+                <Flame
+                  className={`w-4 h-4 ${
+                    streak > 0 ? "fill-orange-500 animate-pulse" : ""
+                  }`}
+                />
+                <span className="text-sm font-bold font-mono">{streak}</span>
+              </div>
+
+              {/* Avatar Link */}
               <Link
                 href="/settings/profile"
                 className="hover:opacity-80 transition-opacity ring-2 ring-purple-500/20 rounded-full p-0.5"
               >
-                {/* ดึงรูปจาก user_metadata หรือใช้ตัวอักษรแรกของ email */}
                 <Avatar
                   src={user.user_metadata?.avatar_url}
                   alt={user.user_metadata?.full_name || "User"}
@@ -102,7 +140,7 @@ export default function Navbar() {
                 </Avatar>
               </Link>
 
-              {/* (Optional) ปุ่ม Logout เล็กๆ ข้างๆ */}
+              {/* Logout Button */}
               <button
                 onClick={handleSignOut}
                 className="text-gray-400 hover:text-red-400 transition-colors p-2"

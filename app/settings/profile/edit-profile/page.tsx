@@ -1,18 +1,23 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabaseClient";
+import { User } from "@supabase/supabase-js"; // Import Type User
 import {
-  Camera,
   Save,
   ArrowLeft,
   Check,
   Code,
-  User,
+  User as UserIcon,
   Mail,
   Github,
+  Loader2,
+  Camera, // เอาไว้ใช้ตกแต่ง Header ของ Section
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import SettingsShell from "@/components/settings-shell";
+import AvatarUpload from "@/components/AvatarUpload"; // ✅ 1. Import Component ของเรามา
 
 const allSkills = [
   "TypeScript",
@@ -25,23 +30,73 @@ const allSkills = [
   "AWS",
   "SQL",
   "MongoDB",
+  "Supabase",
+  "Figma",
 ];
 
 export default function EditProfilePage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  // --- States ---
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [user, setUser] = useState<User | null>(null); // ✅ 2. เก็บ User Object เต็มๆ เพื่อส่งให้ Component ลูก
+
   const [formData, setFormData] = useState({
-    name: "Username",
-    title: "Full Stack Developer",
-    bio: "Passionate developer focusing on scalable web applications and community contributions. Always learning new technologies.",
-    email: "Email@example.com",
-    github: "Hexx-dev",
+    name: "",
+    title: "",
+    bio: "",
+    email: "",
+    github: "",
   });
 
-  const [selectedSkills, setSelectedSkills] = useState([
-    "TypeScript",
-    "React",
-    "Next.js",
-    "Tailwind CSS",
-  ]);
+  const [selectedSkills, setSelectedSkills] = useState<string[]>([]);
+
+  // 1. Fetch Data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+
+        if (!user) {
+          router.push("/login");
+          return;
+        }
+
+        setUser(user); // ✅ เก็บข้อมูล User ไว้ส่งต่อ
+
+        const { data: profile, error } = await supabase
+          .from("profiles")
+          .select("*")
+          .eq("id", user.id)
+          .single();
+
+        if (error) throw error;
+
+        if (profile) {
+          setFormData({
+            name: profile.full_name || "",
+            title: profile.job_title || "",
+            bio: profile.bio || "",
+            email: user.email || "",
+            github: profile.github_username || "",
+          });
+          setSelectedSkills(profile.skills || []);
+        }
+      } catch (error) {
+        console.error("Error loading profile:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [supabase, router]);
+
+  // --- Handlers ---
 
   const toggleSkill = (skill: string) => {
     setSelectedSkills((prev) =>
@@ -56,8 +111,49 @@ export default function EditProfilePage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // ✅ 3. ฟังก์ชันบันทึก เหลือแค่ Text Data (เพราะรูปบันทึกใน Component ลูกแล้ว)
+  const handleSave = async () => {
+    if (!user) return;
+    setSaving(true);
+
+    try {
+      const { error: updateError } = await supabase
+        .from("profiles")
+        .update({
+          full_name: formData.name,
+          job_title: formData.title,
+          bio: formData.bio,
+          github_username: formData.github,
+          skills: selectedSkills,
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+
+      if (updateError) throw updateError;
+
+      router.push("/settings/profile");
+      router.refresh();
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <SettingsShell title="แก้ไขโปรไฟล์">
+        <div className="flex h-64 items-center justify-center">
+          <Loader2 className="animate-spin text-purple-500 w-8 h-8" />
+        </div>
+      </SettingsShell>
+    );
+  }
+
   return (
     <SettingsShell title="แก้ไขโปรไฟล์" hideHeader={true}>
+      {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 border-b border-gray-800 pb-4 gap-4">
         <div>
           <Link
@@ -71,46 +167,51 @@ export default function EditProfilePage() {
             แก้ไขโปรไฟล์
           </h1>
         </div>
-        <button className="flex items-center justify-center px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5">
-          <Save className="w-4 h-4 mr-2" /> บันทึกข้อมูล
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center justify-center px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4 mr-2" />
+          )}
+          {saving ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
         </button>
       </div>
 
       <div className="max-w-4xl space-y-8">
-        {/* Profile Picture Section */}
+        {/* ✅ 4. เรียกใช้ AvatarUpload Component */}
         <section className="bg-[#161b22] border border-gray-800 rounded-xl p-6 shadow-xl">
           <h2 className="text-md font-semibold text-white mb-6 flex items-center">
             <Camera className="w-4 h-4 mr-2 text-purple-500" /> รูปโปรไฟล์
           </h2>
-          <div className="flex flex-col sm:flex-row items-center gap-6">
-            <div className="relative group cursor-pointer">
-              <div className="w-20 h-20 md:w-24 md:h-24 rounded-full overflow-hidden border-4 border-purple-500 bg-[#1e222e] flex items-center justify-center text-2xl text-gray-500 font-bold">
-                {formData.name.substring(0, 2).toUpperCase()}
-              </div>
-              <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Camera size={20} className="text-white" />
-              </div>
-            </div>
-            <div className="text-center sm:text-left">
-              <p className="text-sm text-gray-200 font-medium mb-1">
+
+          <div className="flex flex-col sm:flex-row items-center gap-8">
+            {/* Component จะจัดการแสดงรูปและอัปโหลดเอง */}
+            <AvatarUpload user={user} />
+
+            <div className="text-center sm:text-left space-y-1">
+              <p className="text-sm text-gray-200 font-medium">
                 เปลี่ยนรูปโปรไฟล์ของคุณ
               </p>
               <p className="text-xs text-gray-500">
-                แนะนำขนาด 400x400px (JPG, PNG)
+                ระบบจะบันทึกรูปภาพให้อัตโนมัติเมื่ออัปโหลดเสร็จสิ้น
               </p>
             </div>
           </div>
         </section>
 
-        {/* General Info Section */}
+        {/* General Info Section (เหมือนเดิม) */}
         <section className="bg-[#161b22] border border-gray-800 rounded-xl p-6 space-y-6 shadow-xl">
           <h2 className="text-md font-semibold text-white border-b border-gray-800 pb-2 mb-4 flex items-center">
-            <User className="w-4 h-4 mr-2 text-purple-500" /> ข้อมูลทั่วไป
+            <UserIcon className="w-4 h-4 mr-2 text-purple-500" /> ข้อมูลทั่วไป
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-xs font-medium text-gray-500 ml-1">
-                ชื่อผู้ใช้งาน
+                ชื่อ-นามสกุล (Display Name)
               </label>
               <input
                 type="text"
@@ -122,13 +223,14 @@ export default function EditProfilePage() {
             </div>
             <div className="space-y-2">
               <label className="text-xs font-medium text-gray-500 ml-1">
-                ตำแหน่งงาน
+                ตำแหน่งงาน (Job Title)
               </label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
+                placeholder="Ex. Full Stack Developer"
                 className="w-full bg-[#0F1117] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
               />
             </div>
@@ -151,13 +253,14 @@ export default function EditProfilePage() {
             <div className="space-y-2">
               <label className="text-xs font-medium text-gray-500 ml-1 flex items-center">
                 <Mail className="w-3.5 h-3.5 mr-1.5" /> อีเมลติดต่อ
+                (แก้ไขไม่ได้)
               </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
-                onChange={handleChange}
-                className="w-full bg-[#0F1117] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
+                disabled
+                className="w-full bg-[#0F1117]/50 border border-gray-800/50 rounded-lg px-4 py-2.5 text-gray-400 cursor-not-allowed text-sm"
               />
             </div>
             <div className="space-y-2">
@@ -169,13 +272,14 @@ export default function EditProfilePage() {
                 name="github"
                 value={formData.github}
                 onChange={handleChange}
+                placeholder="username"
                 className="w-full bg-[#0F1117] border border-gray-800 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-purple-500 focus:ring-1 focus:ring-purple-500/50 transition-all text-sm"
               />
             </div>
           </div>
         </section>
 
-        {/* Skill Picker Section */}
+        {/* Skill Picker Section (เหมือนเดิม) */}
         <section className="bg-[#161b22] border border-gray-800 rounded-xl p-6 shadow-xl">
           <div className="flex items-center justify-between border-b border-gray-800 pb-2 mb-6">
             <h2 className="text-md font-semibold text-white flex items-center">
