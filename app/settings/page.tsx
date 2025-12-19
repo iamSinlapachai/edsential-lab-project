@@ -28,14 +28,14 @@ const ToggleSwitch = ({
         {description}
       </p>
     </div>
-    <label className="relative inline-flex items-center cursor-pointer flex-shrink-0">
+    <label className="relative inline-flex items-center cursor-pointer shrink-0">
       <input
         type="checkbox"
         checked={isChecked}
         onChange={onChange}
         className="sr-only peer"
       />
-      <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
+      <div className="w-11 h-6 bg-gray-700 rounded-full peer peer-focus:outline-none peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-2px after:left-2px after:bg-white after:border after:border-gray-300 after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-purple-600"></div>
     </label>
   </div>
 );
@@ -166,7 +166,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleResetPassword}
                 disabled={loadingReset}
-                className="flex items-center justify-center flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer"
+                className="flex items-center justify-center shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-80px cursor-pointer"
               >
                 {loadingReset ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -180,7 +180,7 @@ export default function SettingsPage() {
             <div className="flex justify-between items-center py-4">
               <div className="pr-4">
                 <p className="font-medium text-white text-sm md:text-base flex items-center">
-                  <ShieldCheck className="w-4 h-4 mr-1 text-green-400 flex-shrink-0" />{" "}
+                  <ShieldCheck className="w-4 h-4 mr-1 text-green-400 shrink-0" />{" "}
                   ยืนยัน 2 ชั้น (2FA)
                 </p>
                 <p className="text-[11px] md:text-sm text-gray-500">
@@ -189,7 +189,7 @@ export default function SettingsPage() {
               </div>
               <button
                 disabled
-                className="flex-shrink-0 px-4 py-1.5 bg-gray-800/50 text-gray-500 border border-gray-700/50 rounded-lg text-xs md:text-sm cursor-not-allowed"
+                className="shrink-0 px-4 py-1.5 bg-gray-800/50 text-gray-500 border border-gray-700/50 rounded-lg text-xs md:text-sm cursor-not-allowed"
               >
                 ตั้งค่า
               </button>

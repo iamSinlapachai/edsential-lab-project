@@ -108,14 +108,14 @@ export default function SettingsShell({
       <GradientBG />
 
       {/* 1. Mobile Top Bar */}
-      <div className="lg:hidden flex items-center justify-between p-4 bg-[#161b22] border-b border-gray-800 sticky top-0 w-full z-[100]">
+      <div className="lg:hidden flex items-center justify-between p-4 bg-[#161b22] border-b border-gray-800 sticky top-0 w-full ">
         <h2 className="text-white font-bold flex items-center">
           {/* Show icon based on current section if possible, or generic Settings icon */}
           <Settings className="w-5 h-5 mr-2 text-purple-400" /> {title}
         </h2>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-2 text-gray-400 hover:text-white transition-colors relative z-[101]"
+          className="p-2 text-gray-400 hover:text-white transition-colors relative z-101"
         >
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -125,7 +125,7 @@ export default function SettingsShell({
         {/* 2. Sidebar Navigation */}
         <aside
           className={`
-          fixed inset-y-0 left-0 z-[90] w-64 bg-[#161b22] transition-transform duration-300 transform 
+          fixed inset-y-0 left-0 z-90 w-64 bg-[#161b22] transition-transform duration-300 transform 
           lg:translate-x-0 lg:static lg:block lg:h-screen lg:rounded-3xl lg:my-6 lg:ml-4
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
           border-r border-gray-800 flex flex-col p-4 shadow-2xl lg:shadow-none
@@ -181,7 +181,7 @@ export default function SettingsShell({
         {/* 3. Mobile Overlay */}
         {isSidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/60 z-[80] lg:hidden backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 z-80 lg:hidden backdrop-blur-sm"
             onClick={() => setIsSidebarOpen(false)}
           />
         )}

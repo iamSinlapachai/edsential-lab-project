@@ -83,7 +83,7 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-[#0F1117] sticky top-0 z-[100] border-b border-gray-800">
+    <nav className="w-full bg-[#0F1117] sticky top-0 z-100 border-b border-gray-800">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
         
         {/* Logo */}

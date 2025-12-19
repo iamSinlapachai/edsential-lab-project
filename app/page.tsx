@@ -43,7 +43,7 @@ export default async function Home() {
           <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-[600px] w-[500px] rounded-full bg-fuchsia-600/20 blur-[150px]" />
         </div>
 
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 mb-4 md:mb-6 tracking-wide">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600 mb-4 md:mb-6 tracking-wide">
           Careers Roadmaps
         </h1>
         <p className="max-w-2xl text-sm sm:text-base md:text-xl text-gray-400 leading-relaxed">

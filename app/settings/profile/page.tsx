@@ -59,7 +59,7 @@ export default async function ProfilePage() {
       <div className="flex justify-between items-start mb-10">
         <div className="flex items-center space-x-6">
           {/* Avatar Section */}
-          <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-4 border-purple-500 flex-shrink-0">
+          <div className="relative w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden border-4 border-purple-500 shrink-0">
             {displayData.avatar_url ? (
               <Image
                 src={displayData.avatar_url}
@@ -75,7 +75,7 @@ export default async function ProfilePage() {
           </div>
 
           <div>
-            <p className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600 tracking-tight">
+            <p className="text-xl md:text-2xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-600 tracking-tight">
               {displayData.name}
             </p>
             <p className="text-sm md:text-md text-gray-400">
@@ -132,7 +132,7 @@ export default async function ProfilePage() {
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="flex items-center text-gray-400 text-sm">
-              <Mail className="w-4 h-4 mr-2 text-gray-600 flex-shrink-0" />
+              <Mail className="w-4 h-4 mr-2 text-gray-600 shrink-0" />
               อีเมล:{" "}
               <span className="ml-2 font-medium text-white break-all">
                 {displayData.email}
@@ -149,7 +149,7 @@ export default async function ProfilePage() {
               rel="noopener noreferrer"
               className="flex items-center text-gray-400 hover:text-purple-400 transition-colors group text-sm"
             >
-              <Github className="w-4 h-4 mr-2 text-purple-500 group-hover:text-purple-400 flex-shrink-0" />
+              <Github className="w-4 h-4 mr-2 text-purple-500 group-hover:text-purple-400 shrink-0" />
               GitHub:{" "}
               <span className="ml-2">{displayData.github || "ไม่ได้ระบุ"}</span>
             </a>

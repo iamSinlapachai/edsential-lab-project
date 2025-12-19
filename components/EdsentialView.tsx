@@ -55,7 +55,7 @@ const Modal = ({
       {/* Content */}
       <div className="relative w-full max-w-3xl bg-[#1a1d26] rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-gradient-to-br from-purple-900/20 to-transparent">
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-linear-to-br from-purple-900/20 to-transparent">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${node.color_class}`}>
               {getIcon(node.icon_name)}
@@ -336,7 +336,7 @@ export default function EdsentialView({
       {/* Hero Section */}
       <div className="relative pt-28 pb-16 px-4 text-center">
         <div className="relative z-10 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 via-pink-400 to-purple-600 mb-6 drop-shadow-2xl">
+          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-br from-purple-400 via-pink-400 to-purple-600 mb-6 drop-shadow-2xl">
             {title}
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto leading-relaxed">
@@ -392,7 +392,7 @@ export default function EdsentialView({
                 >
                   {/* Glow Effect */}
                   <div
-                    className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
+                    className={`absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
                       isCompleted
                         ? "from-green-500/5 to-transparent"
                         : "from-purple-500/5 to-transparent"
