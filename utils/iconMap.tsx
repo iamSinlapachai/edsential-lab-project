@@ -10,6 +10,12 @@ import {
   Cpu,
   Cloud,
   Smartphone,
+  // --- เพิ่มไอคอนใหม่สำหรับ AI ---
+  Calculator,
+  Brain,
+  Network,
+  FileSearch,
+  Bot,
 } from "lucide-react";
 
 export const getIcon = (iconName: string, className: string = "w-6 h-6") => {
@@ -24,8 +30,14 @@ export const getIcon = (iconName: string, className: string = "w-6 h-6") => {
     Cpu: <Cpu className={className} />,
     Cloud: <Cloud className={className} />,
     Smartphone: <Smartphone className={className} />,
-    // เพิ่มไอคอนอื่นๆ ตามต้องการ
+
+    // --- เพิ่ม Mapping ใหม่ ---
+    Calculator: <Calculator className={className} />,
+    Brain: <Brain className={className} />,
+    Network: <Network className={className} />,
+    FileSearch: <FileSearch className={className} />, // ใช้แทน SearchCheck
+    Bot: <Bot className={className} />,
   };
 
-  return icons[iconName] || <Code2 className={className} />; // Default Icon
+  return icons[iconName] || <Code2 className={className} />;
 };

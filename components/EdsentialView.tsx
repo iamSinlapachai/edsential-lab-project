@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabaseClient"; // Client-side client
 import { User } from "@supabase/supabase-js";
-import { getIcon } from "@/utils/iconMap"; // เรียกใช้ Utility ที่สร้างตะกี้
+import { getIcon } from "@/utils/iconMap";
 import {
   Play,
   X,
@@ -14,7 +14,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-// Types ที่ตรงกับ Database ใหม่
+// Types
 interface EdsentialNode {
   id: number;
   sequence_order: number;
@@ -29,10 +29,10 @@ interface EdsentialNode {
 interface EdsentialViewProps {
   title: string;
   description: string;
-  nodes: EdsentialNode[]; // รับข้อมูล Nodes มาจาก Server Component
+  nodes: EdsentialNode[];
 }
 
-// Modal Component (ใส่ไว้ในไฟล์เดียวกันหรือแยกก็ได้)
+// --- Modal Component ---
 const Modal = ({
   isOpen,
   onClose,
@@ -50,7 +50,7 @@ const Modal = ({
       />
       <div className="relative w-full max-w-3xl bg-[#1a1d26] rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-linear-to-br from-purple-900/20 to-transparent">
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-gradient-to-br from-purple-900/20 to-transparent">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${node.color_class}`}>
               {getIcon(node.icon_name)}
@@ -79,8 +79,10 @@ const Modal = ({
           <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-black ring-1 ring-white/10 mb-6">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${node.video_id}?autoplay=1`}
+              // ✅ แก้ไข: ลบ ?autoplay=1 ออก เพื่อไม่ให้เล่นอัตโนมัติ
+              src={`https://www.youtube.com/embed/${node.video_id}`}
               allowFullScreen
+              title={node.title}
             ></iframe>
           </div>
           <div className="prose prose-invert max-w-none">
@@ -96,9 +98,9 @@ const Modal = ({
             disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               isCompleted
-                ? "bg-green-500/10 text-green-500"
-                : "bg-white/5 text-gray-400"
-            } ${isLoading ? "opacity-50" : ""}`}
+                ? "bg-green-500/10 text-green-500 hover:bg-green-500/20"
+                : "bg-white/5 text-gray-400 hover:bg-white/10"
+            } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
             {isLoading ? (
               <Loader2 size={20} className="animate-spin" />
@@ -111,7 +113,7 @@ const Modal = ({
           </button>
           <button
             onClick={onClose}
-            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg"
+            className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors"
           >
             ปิดหน้าต่าง
           </button>
@@ -121,6 +123,7 @@ const Modal = ({
   );
 };
 
+// --- Main Component ---
 export default function EdsentialView({
   title,
   description,
@@ -130,7 +133,7 @@ export default function EdsentialView({
   const supabase = createClient();
 
   const [selectedNode, setSelectedNode] = useState<EdsentialNode | null>(null);
-  const [completedIds, setCompletedIds] = useState<number[]>([]); // เก็บ node_id
+  const [completedIds, setCompletedIds] = useState<number[]>([]);
   const [user, setUser] = useState<User | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
@@ -143,7 +146,6 @@ export default function EdsentialView({
       setUser(user);
 
       if (user) {
-        // เปลี่ยนจาก topic_id เป็น node_id ตามตาราง user_progress ใหม่
         const { data } = await supabase
           .from("user_progress")
           .select("node_id")
@@ -185,14 +187,14 @@ export default function EdsentialView({
 
     try {
       if (isAlreadyCompleted) {
-        // Delete by node_id
+        // Delete
         await supabase
           .from("user_progress")
           .delete()
           .eq("user_id", user.id)
           .eq("node_id", nodeId);
       } else {
-        // Insert node_id
+        // Insert
         await supabase
           .from("user_progress")
           .insert({ user_id: user.id, node_id: nodeId });
@@ -236,7 +238,10 @@ export default function EdsentialView({
             </div>
           </div>
           {progressPercent === 100 && (
-            <Trophy className="text-yellow-500 animate-pulse" />
+            <div className="flex items-center gap-2 text-yellow-500 animate-pulse font-bold text-sm whitespace-nowrap">
+              <Trophy size={16} />
+              <span className="hidden sm:inline">Certified!</span>
+            </div>
           )}
         </div>
       </div>
@@ -244,7 +249,7 @@ export default function EdsentialView({
       {/* Hero Section */}
       <div className="relative pt-28 pb-16 px-4 text-center">
         <div className="relative z-10 max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-linear-to-br from-purple-400 via-pink-400 to-purple-600 mb-6">
+          <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-br from-purple-400 via-pink-400 to-purple-600 mb-6">
             {title}
           </h1>
           <p className="text-lg text-gray-400 max-w-2xl mx-auto">
@@ -269,12 +274,16 @@ export default function EdsentialView({
             >
               {/* Connector Dot */}
               <div
-                className={`absolute left-8 md:left-1/2 -translate-x-[5px] md:-translate-x-1/2 w-4 h-4 rounded-full z-10 border-[3px] ${
+                className={`absolute left-8 md:left-1/2 -translate-x-[5px] md:-translate-x-1/2 w-4 h-4 rounded-full z-10 border-[3px] shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-500 ${
                   isCompleted
                     ? "bg-green-500 border-green-500 scale-125"
                     : "bg-[#0B0D13] border-purple-500"
                 }`}
-              />
+              >
+                {!isCompleted && (
+                  <div className="absolute inset-0 bg-purple-500 rounded-full animate-ping opacity-20"></div>
+                )}
+              </div>
 
               {/* Spacer */}
               <div className="hidden md:block md:w-1/2" />
@@ -287,15 +296,27 @@ export default function EdsentialView({
               >
                 <div
                   onClick={() => setSelectedNode(node)}
-                  className={`group relative p-6 rounded-2xl cursor-pointer border ${
+                  className={`group relative p-6 rounded-2xl cursor-pointer border transition-all duration-300 hover:-translate-y-1 overflow-hidden ${
                     isCompleted
-                      ? "bg-[#13151c] border-green-500/30"
-                      : "bg-[#13151c] border-white/5 hover:border-purple-500/50"
+                      ? "bg-[#13151c] border-green-500/30 shadow-[0_0_20px_rgba(34,197,94,0.1)]"
+                      : "bg-[#13151c] border-white/5 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10"
                   }`}
                 >
-                  <div className="absolute top-4 right-4 text-5xl font-black text-white/5">
+                  {/* Glow Effect */}
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                        ${
+                          isCompleted
+                            ? "from-green-500/5 to-transparent"
+                            : "from-purple-500/5 to-transparent"
+                        }
+                    `}
+                  />
+
+                  <div className="absolute top-4 right-4 text-5xl font-black text-white/5 group-hover:text-purple-500/10 transition-colors select-none">
                     {String(index + 1).padStart(2, "0")}
                   </div>
+
                   <div className="relative z-10">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-xs font-semibold mb-3 ${node.color_class}`}
@@ -303,19 +324,24 @@ export default function EdsentialView({
                       {node.category}
                     </span>
                     <h3
-                      className={`text-2xl font-bold mb-2 flex items-center gap-2 ${
-                        isCompleted ? "text-gray-200" : "text-white"
+                      className={`text-2xl font-bold mb-2 flex items-center gap-2 transition-colors ${
+                        isCompleted
+                          ? "text-gray-200"
+                          : "text-white group-hover:text-purple-400"
                       }`}
                     >
                       {node.title}
+                      {!isCompleted && (
+                        <ChevronRight className="w-5 h-5 opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-purple-500" />
+                      )}
                     </h3>
-                    <p className="text-sm text-gray-500 line-clamp-2 mb-4">
+                    <p className="text-sm text-gray-500 line-clamp-2 mb-4 group-hover:text-gray-400 transition-colors">
                       {node.description.replace(/\*\*/g, "")}
                     </p>
                     <div className="flex items-center justify-between mt-4">
-                      <div className="flex items-center gap-2 text-sm text-purple-400">
-                        <Play size={16} />
-                        <span>ดูวิดีโอ</span>
+                      <div className="flex items-center gap-2 text-sm text-purple-400 group-hover:text-purple-300">
+                        <Play size={16} fill="currentColor" />
+                        <span>ดูวิดีโอประกอบ</span>
                       </div>
                       <button
                         onClick={(e) => {
@@ -323,13 +349,22 @@ export default function EdsentialView({
                           toggleProgress(node.id);
                         }}
                         disabled={actionLoading}
-                        className={`z-20 p-2 rounded-full ${
+                        className={`z-20 p-2 rounded-full transition-all ${
                           isCompleted
                             ? "text-green-500 bg-green-500/10"
-                            : "text-gray-600 hover:bg-white/10"
+                            : "text-gray-600 hover:bg-white/10 hover:text-gray-300"
+                        } ${
+                          actionLoading ? "opacity-50 cursor-not-allowed" : ""
                         }`}
+                        title={
+                          isCompleted
+                            ? "Mark as Incomplete"
+                            : "Mark as Completed"
+                        }
                       >
-                        {isCompleted ? (
+                        {actionLoading && selectedNode?.id === node.id ? (
+                          <Loader2 size={20} className="animate-spin" />
+                        ) : isCompleted ? (
                           <CheckCircle2 size={20} />
                         ) : (
                           <Circle size={20} />
@@ -342,6 +377,28 @@ export default function EdsentialView({
             </div>
           );
         })}
+
+        {/* End Node */}
+        <div className="relative flex justify-center mt-12 pl-8 md:pl-0">
+          <div
+            className={`px-6 py-3 rounded-full flex items-center gap-3 shadow-lg z-10 border transition-all duration-500
+                ${
+                  progressPercent === 100
+                    ? "bg-green-500/10 border-green-500/50 text-green-400 shadow-green-500/20"
+                    : "bg-[#13151c] border-purple-500/30 text-purple-300"
+                }
+             `}
+          >
+            {progressPercent === 100 ? (
+              <Trophy className="w-5 h-5" />
+            ) : (
+              <CheckCircle2 className="w-5 h-5" />
+            )}
+            <span className="font-semibold">
+              {progressPercent === 100 ? "Ready to Work!" : "พร้อมทำงานจริง!"}
+            </span>
+          </div>
+        </div>
       </div>
 
       <Modal
