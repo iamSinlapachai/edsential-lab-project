@@ -14,6 +14,7 @@ import {
   Trophy,
   Loader2,
 } from "lucide-react";
+import WarningModal from "@/components/WarningModal"; // อย่าลืมสร้างไฟล์ WarningModal หรือ import ให้ถูก path
 
 // --- Types ---
 interface EdsentialNode {
@@ -33,7 +34,7 @@ interface EdsentialViewProps {
   nodes: EdsentialNode[];
 }
 
-// --- Modal Component ---
+// --- Modal Component (Video Player) ---
 const Modal = ({
   isOpen,
   onClose,
@@ -84,7 +85,7 @@ const Modal = ({
           <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-black ring-1 ring-white/10 mb-6">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
-              // ลบ ?autoplay=1 ออกเพื่อให้ User กดเล่นเอง
+              // ลบ autoplay ออก เพื่อประสบการณ์ใช้งานที่ดี
               src={`https://www.youtube.com/embed/${node.video_id}`}
               allowFullScreen
               title={node.title}
@@ -144,7 +145,25 @@ export default function EdsentialView({
   const [user, setUser] = useState<User | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
 
-  // 1. Initial Load
+  // --- Warning Modal State ---
+  const [warningConfig, setWarningConfig] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm?: () => void;
+    confirmLabel?: string;
+    variant?: "default" | "danger" | "success";
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const closeWarning = () => {
+    setWarningConfig((prev) => ({ ...prev, isOpen: false }));
+  };
+
+  // 1. Initial Load: ดึงข้อมูล User และ Progress
   useEffect(() => {
     const initData = async () => {
       const {
@@ -164,54 +183,75 @@ export default function EdsentialView({
     initData();
   }, [supabase]);
 
-  // ฟังก์ชันช่วยอัปเดต Streak
+  // --- Helper: Update Streak Logic ---
   const updateStreak = async (userId: string) => {
+    // 1. ดึงข้อมูล Streak ปัจจุบัน
     const { data: profile } = await supabase
       .from("profiles")
       .select("current_streak, last_activity_date")
       .eq("id", userId)
       .single();
 
-    const today = new Date().toISOString().split("T")[0];
-    const lastDate = profile?.last_activity_date;
+    // ใช้ Date Object เพื่อคำนวณวัน
+    const now = new Date();
+    const todayStr = now.toISOString().split("T")[0]; // YYYY-MM-DD (UTC)
 
-    const yesterday = new Date();
+    // หา "เมื่อวาน"
+    const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split("T")[0];
 
+    const lastDate = profile?.last_activity_date;
     let newStreak = profile?.current_streak || 0;
 
-    if (lastDate === today) {
+    // Logic การนับ Streak
+    if (lastDate === todayStr) {
+      // ทำวันนี้ไปแล้ว -> ไม่ต้องเพิ่ม Streak
       return;
     } else if (lastDate === yesterdayStr) {
+      // ทำต่อเนื่องจากเมื่อวาน -> Streak + 1
       newStreak += 1;
     } else {
+      // ขาดช่วง หรือเพิ่งเริ่ม -> เริ่มนับ 1 ใหม่
       newStreak = 1;
     }
 
+    // อัปเดตลง Database
     await supabase
       .from("profiles")
       .update({
         current_streak: newStreak,
-        last_activity_date: today,
+        last_activity_date: todayStr,
       })
       .eq("id", userId);
   };
 
-  // 2. Toggle Logic
+  // 2. Toggle Logic (Save/Unsave)
   const toggleProgress = async (nodeId: number) => {
+    // A. Check Login
     if (!user) {
-      if (confirm("กรุณาเข้าสู่ระบบเพื่อบันทึกความคืบหน้า"))
-        router.push("/login");
+      setWarningConfig({
+        isOpen: true,
+        title: "กรุณาเข้าสู่ระบบ",
+        message: "คุณต้องเข้าสู่ระบบก่อนจึงจะสามารถบันทึกความคืบหน้าได้",
+        confirmLabel: "เข้าสู่ระบบ",
+        onConfirm: () => router.push("/login"),
+      });
       return;
     }
 
-    // Check Sequence Logic
+    // B. Check Sequence Logic (ห้ามข้ามขั้นตอน)
     const currentIndex = nodes.findIndex((n) => n.id === nodeId);
     if (currentIndex > 0 && !completedIds.includes(nodeId)) {
       const prevNode = nodes[currentIndex - 1];
       if (!completedIds.includes(prevNode.id)) {
-        alert("ควรเรียนรู้ตามลำดับเส้นทาง เพื่อให้ได้ผลลัพธ์ที่ดีที่สุด");
+        setWarningConfig({
+          isOpen: true,
+          title: "เรียนข้ามขั้นตอน?",
+          message:
+            "แนะนำให้เรียนรู้ตามลำดับเส้นทาง เพื่อให้ได้ผลลัพธ์ที่ดีที่สุด",
+          variant: "default",
+        });
         return;
       }
     }
@@ -219,7 +259,7 @@ export default function EdsentialView({
     setActionLoading(true);
     const isAlreadyCompleted = completedIds.includes(nodeId);
 
-    // Optimistic UI Update
+    // Optimistic UI: อัปเดต State ทันทีเพื่อให้ User รู้สึกว่าแอปเร็ว
     setCompletedIds((prev) =>
       isAlreadyCompleted
         ? prev.filter((id) => id !== nodeId)
@@ -228,27 +268,27 @@ export default function EdsentialView({
 
     try {
       if (isAlreadyCompleted) {
-        // กรณีลบ (Uncheck)
+        // กรณี: ยกเลิกการเรียนจบ (Delete)
         await supabase
           .from("user_progress")
           .delete()
           .eq("user_id", user.id)
           .eq("node_id", nodeId);
       } else {
-        // กรณีเพิ่ม (Check)
+        // กรณี: เรียนจบ (Insert)
         await supabase
           .from("user_progress")
           .insert({ user_id: user.id, node_id: nodeId });
 
-        // ✅ อัปเดต Streak เมื่อเรียนจบ
+        // ✅ อัปเดต Streak ทันทีเมื่อเรียนจบ
         await updateStreak(user.id);
       }
 
-      // ✅ สั่ง Refresh เพื่อให้หน้า Home และ Navbar รับรู้ข้อมูลใหม่ทันที
+      // ✅ สั่ง Refresh เพื่อให้ Navbar (ที่มี Streak) และหน้า Home อัปเดตข้อมูล
       router.refresh();
     } catch (error) {
       console.error("Error:", error);
-      // Revert state if error
+      // Revert state if error (Rollback UI)
       setCompletedIds((prev) =>
         isAlreadyCompleted
           ? [...prev, nodeId]
@@ -454,6 +494,17 @@ export default function EdsentialView({
         }
         onToggle={toggleProgress}
         isLoading={actionLoading}
+      />
+
+      {/* Warning Modal */}
+      <WarningModal
+        isOpen={warningConfig.isOpen}
+        onClose={closeWarning}
+        title={warningConfig.title}
+        message={warningConfig.message}
+        onConfirm={warningConfig.onConfirm}
+        confirmLabel={warningConfig.confirmLabel}
+        variant={warningConfig.variant}
       />
     </main>
   );
