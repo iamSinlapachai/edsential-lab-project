@@ -26,7 +26,7 @@ const menuGroups = [
         href: "/settings/edsential-progress",
         icon: BarChart3,
       },
-      { name: "ตั้งค่า", href: "/settings/", icon: Settings },
+      { name: "ตั้งค่า", href: "/settings", icon: Settings },
     ],
   },
   {
@@ -88,15 +88,18 @@ export default function SettingsShell({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Helper to determine if a link is active
-  // Special check for /settings/ to avoid matching everything starting with /settings
   const isLinkActive = (href: string) => {
-    if (href === "/settings/" && currentPath !== "/settings/") {
-      return false;
+    // 1. Strict match for main settings page to avoid highlighting on subpages
+    if (href === "/settings") {
+      return currentPath === "/settings";
     }
+
     // Strict match for aboutus, privacy, terms
     if (["/aboutus", "/privacy", "/terms"].includes(href)) {
       return currentPath === href;
     }
+
+    // Default: Check if path matches or starts with href/
     return currentPath === href || currentPath.startsWith(href + "/");
   };
 

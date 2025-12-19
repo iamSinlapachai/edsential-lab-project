@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabaseClient";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -17,6 +17,10 @@ export default function SignUpPage() {
     password: "",
     confirmPassword: "",
   });
+  // State สำหรับควบคุมการมองเห็นรหัสผ่าน
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -55,7 +59,7 @@ export default function SignUpPage() {
       if (error) throw error;
 
       // ถ้าสำเร็จ ให้ไปหน้าแจ้งเตือนให้เช็คเมล
-      router.push("/verify-email");
+      router.push("/signup/verify-email");
     } catch (error: any) {
       console.error("Signup Error:", error);
       setErrorMsg(error.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
@@ -133,41 +137,51 @@ export default function SignUpPage() {
             />
           </div>
 
+          {/* Password Input พร้อมปุ่ม Show/Hide */}
           <div className="space-y-2">
-            <label
-              htmlFor="password"
-              className="text-sm font-medium text-slate-200"
-            >
-              Password
-            </label>
-            <input
-              id="password"
-              type="password"
-              required
-              minLength={6}
-              placeholder="••••••••"
-              value={formData.password}
-              onChange={handleChange}
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
-            />
+            <label htmlFor="password" className="text-sm font-medium text-slate-200">Password</label>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                required
+                minLength={6}
+                placeholder="••••••••"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full rounded-md border border-slate-800 bg-slate-950 pl-3 pr-10 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
+          {/* Confirm Password Input พร้อมปุ่ม Show/Hide */}
           <div className="space-y-2">
-            <label
-              htmlFor="confirmPassword"
-              className="text-sm font-medium text-slate-200"
-            >
-              Confirm Password
-            </label>
-            <input
-              id="confirmPassword"
-              type="password"
-              required
-              placeholder="••••••••"
-              value={formData.confirmPassword}
-              onChange={handleChange}
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
-            />
+            <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-200">Confirm Password</label>
+            <div className="relative">
+              <input
+                id="confirmPassword"
+                type={showConfirmPassword ? "text" : "password"}
+                required
+                placeholder="••••••••"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full rounded-md border border-slate-800 bg-slate-950 pl-3 pr-10 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all outline-none"
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <button
@@ -191,7 +205,7 @@ export default function SignUpPage() {
           <p className="px-8 text-center text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
             <Link
-              href="/signin"
+              href="/login"
               className="font-semibold text-slate-900 underline underline-offset-4 hover:text-slate-800 dark:text-slate-100 dark:hover:text-slate-300 transition-colors"
             >
               Sign in
