@@ -50,7 +50,7 @@ export default function Home() {
 
       {/* Grid Section */}
       <div
-        className="max-w-7xl  mx-auto px-4 md:px-4 sm:px-4"
+        className="max-w-7xl  mx-auto px-4 md:px-8 sm:px-8"
         data-aos="fade-up"
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">

@@ -84,25 +84,10 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* Featured Projects */}
-        <section>
-          <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2 flex items-center">
-            <Bookmark className="w-4 h-4 mr-2 text-purple-500" /> ผลงานเด่น
-          </h2>
-          <div className="space-y-3">
-            <div className="group block bg-[#1e222e] border border-gray-800 rounded-lg p-4 transition-all duration-200 hover:border-purple-500/50 hover:shadow-lg">
-              <p className="font-semibold text-white group-hover:text-purple-300 transition-colors">
-                Awesome Web App
-              </p>
-              <p className="text-sm text-gray-400">
-                Next.js, TypeScript, PostgreSQL
-              </p>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Contact Info */}
-        <section>
+        <section >
           <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2 flex items-center">
             <Mail className="w-4 h-4 mr-2 text-purple-500" /> ข้อมูลติดต่อ
           </h2>

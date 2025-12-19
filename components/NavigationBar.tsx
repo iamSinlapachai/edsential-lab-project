@@ -5,6 +5,8 @@ import { Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
 import Avatar from '@mui/material/Avatar';
 import { deepPurple } from '@mui/material/colors';
+import EdsentialLogo from '@/assets/image/EdsentialLab-Logo.png';
+import Image from 'next/image';
 
 export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -22,6 +24,7 @@ export default function Navbar() {
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
+            <Image src={EdsentialLogo} alt="Edsential Logo" width={32} height={32} />
             <h1 className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
               Edsential
             </h1>
