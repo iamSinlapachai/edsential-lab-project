@@ -1,3 +1,4 @@
+// app/settings/page.tsx
 "use client";
 
 import { Bell, Zap, Lock, ShieldCheck, Loader2 } from "lucide-react";
@@ -5,6 +6,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
 import SettingsShell from "@/components/settings-shell";
+import WarningModal from "@/components/WarningModal";
 
 interface ToggleSwitchProps {
   label: string;
@@ -47,6 +49,14 @@ export default function SettingsPage() {
   const [email, setEmail] = useState("");
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
 
+  // --- Modal States ---
+  const [showResetSuccess, setShowResetSuccess] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false); // Step 1
+  const [showDeleteInput, setShowDeleteInput] = useState(false); // Step 2
+  const [deleteInputValue, setDeleteInputValue] = useState("");
+
   // 1. Fetch User Data
   useEffect(() => {
     const getUser = async () => {
@@ -62,6 +72,7 @@ export default function SettingsPage() {
   const handleResetPassword = async () => {
     if (!email) return;
     setLoadingReset(true);
+    setResetError(null);
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/update-password`,
@@ -70,27 +81,22 @@ export default function SettingsPage() {
     setLoadingReset(false);
 
     if (error) {
-      alert("เกิดข้อผิดพลาด: " + error.message);
+      setResetError(error.message);
     } else {
-      alert(
-        `ส่งลิงก์เปลี่ยนรหัสผ่านไปที่ ${email} เรียบร้อยแล้ว กรุณาเช็คอีเมล (รวมถึงใน Junk/Spam)`
-      );
+      setShowResetSuccess(true);
     }
   };
 
   // 3. Logic: Delete Account
-  const handleDeleteAccount = async () => {
-    // Step A: Confirmation 1
-    const confirmDelete = confirm(
-      "⚠️ คำเตือน: คุณแน่ใจหรือไม่ที่จะลบบัญชี?\n\nข้อมูลโปรไฟล์, ความคืบหน้าการเรียน, และ Bookmark ทั้งหมดจะหายไปและกู้คืนไม่ได้"
-    );
+  const confirmFirstStep = () => {
+    setShowDeleteConfirm(false);
+    setShowDeleteInput(true);
+    setDeleteInputValue("");
+  };
 
-    if (!confirmDelete) return;
-
-    // Step B: Confirmation 2 (Double Check)
-    const doubleCheck = prompt("พิมพ์คำว่า 'DELETE' เพื่อยืนยันการลบ");
-    if (doubleCheck !== "DELETE") {
-      alert("การยืนยันไม่ถูกต้อง ยกเลิกการลบ");
+  const handleFinalDelete = async () => {
+    if (deleteInputValue !== "DELETE") {
+      // Should handle validation in UI, but safe guard here
       return;
     }
 
@@ -110,14 +116,15 @@ export default function SettingsPage() {
       // Step D: Sign out & Redirect
       await supabase.auth.signOut();
 
-      alert("บัญชีของคุณถูกลบเรียบร้อยแล้ว");
+      // No alert needed, just redirect
       router.push("/");
       router.refresh();
     } catch (error: any) {
       console.error(error);
-      alert("เกิดข้อผิดพลาด: " + error.message);
+      setResetError(error.message); // Reuse Error Modal
     } finally {
       setLoadingDelete(false);
+      setShowDeleteInput(false);
     }
   };
 
@@ -205,7 +212,7 @@ export default function SettingsPage() {
               </p>
             </div>
             <button
-              onClick={handleDeleteAccount}
+              onClick={() => setShowDeleteConfirm(true)}
               disabled={loadingDelete}
               className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -220,6 +227,61 @@ export default function SettingsPage() {
           </div>
         </section>
       </div>
+
+      {/* --- Modals --- */}
+
+      {/* 1. Reset Password Success */}
+      <WarningModal
+        isOpen={showResetSuccess}
+        onClose={() => setShowResetSuccess(false)}
+        title="ตรวจสอบอีเมล"
+        message={`ส่งลิงก์เปลี่ยนรหัสผ่านไปที่ ${email} เรียบร้อยแล้ว\nกรุณาเช็คกล่องจดหมาย (หรือ Junk/Spam)`}
+        variant="success"
+      />
+
+      {/* 2. Generic Error Modal (for Reset or Delete error) */}
+      <WarningModal
+        isOpen={!!resetError}
+        onClose={() => setResetError(null)}
+        title="แจ้งเตือน"
+        message={resetError || "เกิดข้อผิดพลาด"}
+        variant="danger"
+      />
+
+      {/* 3. Delete Account Step 1: Confirm */}
+      <WarningModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        title="ยืนยันการลบบัญชี"
+        message="⚠️ คำเตือน: ข้อมูลโปรไฟล์, ความคืบหน้าการเรียน, และ Bookmark ทั้งหมดจะหายไปถาวรและกู้คืนไม่ได้ คุณแน่ใจหรือไม่?"
+        variant="danger"
+        confirmLabel="ลบข้อมูล"
+        onConfirm={confirmFirstStep}
+      />
+
+      {/* 4. Delete Account Step 2: Type Confirmation */}
+      <WarningModal
+        isOpen={showDeleteInput}
+        onClose={() => setShowDeleteInput(false)}
+        title="ป้อนคำยืนยัน"
+        message="พิมพ์คำว่า 'DELETE' ในช่องด้านล่างเพื่อยืนยันการลบ"
+        variant="danger"
+        confirmLabel={loadingDelete ? "กำลังลบ..." : "ลบทันที"}
+        onConfirm={handleFinalDelete}
+      >
+        <input
+          type="text"
+          value={deleteInputValue}
+          onChange={(e) => setDeleteInputValue(e.target.value)}
+          placeholder="DELETE"
+          className="w-full bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 text-center font-bold tracking-widest"
+        />
+        {deleteInputValue !== "DELETE" && deleteInputValue !== "" && (
+          <p className="text-red-500 text-xs mt-2">
+            * กรุณาพิมพ์ให้ถูกต้อง (ตัวพิมพ์ใหญ่ทั้งหมด)
+          </p>
+        )}
+      </WarningModal>
     </SettingsShell>
   );
 }
