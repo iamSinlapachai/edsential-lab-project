@@ -32,7 +32,7 @@ export default function Footer() {
           </div>
           <div>
             <Link href={"/"} className="hover:underline">
-              Youtubev
+              Youtube
             </Link>
           </div>
         </div>

@@ -166,7 +166,7 @@ export default function SettingsPage() {
                   เปลี่ยนรหัสผ่านล่าสุดเมื่อ 3 เดือนที่แล้ว
                 </p>
               </div>
-              <button className="flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors">
+              <button className="flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors cursor-pointer">
                 เปลี่ยน
               </button>
             </div>
@@ -180,7 +180,7 @@ export default function SettingsPage() {
                   เพิ่มความปลอดภัยอีกระดับ
                 </p>
               </div>
-              <button className="flex-shrink-0 px-4 py-1.5 bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-500/30 rounded-lg text-xs md:text-sm transition-colors font-medium">
+              <button className="flex-shrink-0 px-4 py-1.5 bg-purple-600/10 hover:bg-purple-600/20 text-purple-400 border border-purple-500/30 rounded-lg text-xs md:text-sm transition-colors font-medium cursor-pointer">
                 ตั้งค่า
               </button>
             </div>
@@ -201,7 +201,7 @@ export default function SettingsPage() {
                 ข้อมูลทั้งหมดจะถูกลบถาวร
               </p>
             </div>
-            <button className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20">
+            <button className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20 cursor-pointer">
               ลบบัญชี
             </button>
           </div>

@@ -167,18 +167,7 @@ export default function EditProfilePage() {
             แก้ไขโปรไฟล์
           </h1>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex items-center justify-center px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {saving ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <Save className="w-4 h-4 mr-2" />
-          )}
-          {saving ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
-        </button>
+        
       </div>
 
       <div className="max-w-4xl space-y-8">
@@ -314,9 +303,18 @@ export default function EditProfilePage() {
 
         </section>
         <div className="flex justify-end">
-          <button className="flex items-center justify-center px-5 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5">
-            <Save className="w-4 h-4 mr-2" /> บันทึกข้อมูล
-          </button>
+          <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center justify-center px-6 py-2 bg-gradient-to-r from-purple-500 to-pink-600 text-white font-medium rounded-lg shadow-lg hover:from-purple-600 hover:to-pink-700 transition duration-300 transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+          ) : (
+            <Save className="w-4 h-4 mr-2" />
+          )}
+          {saving ? "กำลังบันทึก..." : "บันทึกข้อมูล"}
+        </button>
         </div>
 
       </div>

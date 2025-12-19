@@ -123,23 +123,7 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        {/* Featured Projects (Static Mockup - เพราะยังไม่มีตาราง Projects) */}
-        <section>
-          <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2 flex items-center">
-            <Bookmark className="w-4 h-4 mr-2 text-purple-500" /> ผลงานเด่น
-          </h2>
-          <div className="space-y-3">
-            <div className="group block bg-[#1e222e] border border-gray-800 rounded-lg p-4 transition-all duration-200 hover:border-purple-500/50 hover:shadow-lg">
-              <p className="font-semibold text-white group-hover:text-purple-300 transition-colors">
-                My First Project
-              </p>
-              <p className="text-sm text-gray-400">
-                (ส่วนนี้ยังเป็นข้อมูลตัวอย่าง คุณสามารถสร้างตาราง projects
-                เพิ่มเติมในอนาคต)
-              </p>
-            </div>
-          </div>
-        </section>
+        
 
         {/* Contact Info */}
         <section >
