@@ -1,17 +1,31 @@
-import { Globe, Layers, Code2, Database, Server, BookOpen } from "lucide-react";
+// utils/iconMap.tsx
+import {
+  Globe,
+  Layers,
+  Code2,
+  BookOpen,
+  Server,
+  Database,
+  Terminal,
+  Cpu,
+  Cloud,
+  Smartphone,
+} from "lucide-react";
 
-// สร้าง Dictionary จับคู่ String -> Component
-export const iconMap: Record<string, React.ReactNode> = {
-  Globe: <Globe className="w-6 h-6" />,
-  Layers: <Layers className="w-6 h-6" />,
-  Code2: <Code2 className="w-6 h-6" />,
-  Database: <Database className="w-6 h-6" />,
-  Server: <Server className="w-6 h-6" />,
-  BookOpen: <BookOpen className="w-6 h-6" />,
-  // เพิ่มให้ครบ...
-};
+export const getIcon = (iconName: string, className: string = "w-6 h-6") => {
+  const icons: Record<string, React.ReactNode> = {
+    Globe: <Globe className={className} />,
+    Layers: <Layers className={className} />,
+    Code2: <Code2 className={className} />,
+    BookOpen: <BookOpen className={className} />,
+    Server: <Server className={className} />,
+    Database: <Database className={className} />,
+    Terminal: <Terminal className={className} />,
+    Cpu: <Cpu className={className} />,
+    Cloud: <Cloud className={className} />,
+    Smartphone: <Smartphone className={className} />,
+    // เพิ่มไอคอนอื่นๆ ตามต้องการ
+  };
 
-// ฟังก์ชันเรียกใช้
-export const getIcon = (name: string) => {
-  return iconMap[name] || <Code2 className="w-6 h-6" />; // Default icon
+  return icons[iconName] || <Code2 className={className} />; // Default Icon
 };
