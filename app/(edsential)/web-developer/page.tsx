@@ -1,5 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation"; // เพิ่ม router
+import { createClient } from "@/lib/supabaseClient"; // เรียกใช้ Supabase
 import {
   Play,
   X,
@@ -13,8 +15,11 @@ import {
   Code2,
   Circle,
   Trophy,
+  Loader2, // เพิ่ม icon loading
 } from "lucide-react";
+import { User } from "@supabase/supabase-js"; // Type User
 
+// ... (Interfaces และ Data "topics" คงเดิม ไม่ต้องแก้) ...
 // --- 1. กำหนด Interfaces (Types) ---
 
 interface Topic {
@@ -33,6 +38,7 @@ interface ModalProps {
   topic: Topic | null;
   isCompleted: boolean;
   onToggle: (id: number) => void;
+  isLoading?: boolean; // เพิ่ม prop นี้
 }
 
 // --- 2. ข้อมูลจำลอง (Data) ---
@@ -149,7 +155,7 @@ const topics: Topic[] = [
   },
 ];
 
-// --- 3. Components ย่อย ---
+// --- 3. Components ย่อย (ปรับแก้ Modal เล็กน้อย) ---
 
 const Modal: React.FC<ModalProps> = ({
   isOpen,
@@ -157,6 +163,7 @@ const Modal: React.FC<ModalProps> = ({
   topic,
   isCompleted,
   onToggle,
+  isLoading,
 }) => {
   if (!isOpen || !topic) return null;
 
@@ -215,17 +222,24 @@ const Modal: React.FC<ModalProps> = ({
           </div>
         </div>
 
-        {/* Footer with Action Buttons (รวมปุ่ม Toggle จาก Code 2) */}
+        {/* Footer */}
         <div className="p-4 bg-[#13151c] border-t border-white/10 flex justify-between items-center">
           <button
             onClick={() => onToggle(topic.id)}
+            disabled={isLoading}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-colors ${
               isCompleted
                 ? "bg-green-500/10 text-green-500 hover:bg-green-500/20"
                 : "bg-white/5 text-gray-400 hover:bg-white/10"
-            }`}
+            } ${isLoading ? "opacity-50 cursor-not-allowed" : ""}`}
           >
-            {isCompleted ? <CheckCircle2 size={20} /> : <Circle size={20} />}
+            {isLoading ? (
+              <Loader2 size={20} className="animate-spin" />
+            ) : isCompleted ? (
+              <CheckCircle2 size={20} />
+            ) : (
+              <Circle size={20} />
+            )}
             {isCompleted ? "เรียนจบแล้ว" : "ยังไม่เรียนจบ"}
           </button>
 
@@ -241,56 +255,124 @@ const Modal: React.FC<ModalProps> = ({
   );
 };
 
+// --- Main Component ---
 export default function WebDeveloperRoadmap() {
+  const router = useRouter();
+  const supabase = createClient();
+
   const [selectedTopic, setSelectedTopic] = useState<Topic | null>(null);
-
-  // --- Logic การเก็บ Progress (จาก Code ชุดที่ 2) ---
   const [completedIds, setCompletedIds] = useState<number[]>([]);
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true); // โหลดข้อมูลครั้งแรก
+  const [actionLoading, setActionLoading] = useState(false); // โหลดตอนกดปุ่ม
 
+  // 1. Check Auth & Load Initial Data
   useEffect(() => {
-    // โหลดข้อมูลจาก LocalStorage
-    const saved = localStorage.getItem("web_dev_progress");
-    if (saved) {
-      setCompletedIds(JSON.parse(saved));
-    }
+    const initData = async () => {
+      setLoading(true);
+      // A. เช็ค User
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        // B. ถ้ามี User ให้ดึงข้อมูล Progress จาก DB
+        const { data, error } = await supabase
+          .from("user_progress")
+          .select("topic_id")
+          .eq("user_id", user.id);
+
+        if (data) {
+          // แปลงข้อมูลจาก [{topic_id: 1}, {topic_id: 2}] -> [1, 2]
+          setCompletedIds(data.map((item) => item.topic_id));
+        }
+      }
+      setLoading(false);
+    };
+
+    initData();
+  }, [supabase]);
+
+  // Scroll to top
+  useEffect(() => {
+    window.scrollTo(0, 0);
   }, []);
 
-  const toggleProgress = (id: number) => {
-    // หา index ของ topic ปัจจุบันใน array
-    const currentIndex = topics.findIndex((t) => t.id === id);
+  // 2. Logic การ Toggle Progress (เชื่อม Database)
+  const toggleProgress = async (id: number) => {
+    // A. ถ้ายังไม่ Login ให้แจ้งเตือนและเด้งไปหน้า Login
+    if (!user) {
+      if (confirm("กรุณาเข้าสู่ระบบเพื่อบันทึกความคืบหน้า")) {
+        router.push("/login");
+      }
+      return;
+    }
 
-    // ถ้าไม่ใช่ตัวแรก และสถานะปัจจุบันยังไม่เสร็จ (กำลังจะกดให้เสร็จ)
+    // B. Logic เช็คลำดับการเรียน (เหมือนเดิม)
+    const currentIndex = topics.findIndex((t) => t.id === id);
     if (currentIndex > 0 && !completedIds.includes(id)) {
       const prevTopic = topics[currentIndex - 1];
-      // ตรวจสอบว่าตัวก่อนหน้าเสร็จหรือยัง
       if (!completedIds.includes(prevTopic.id)) {
         alert(`ควรเรียนรู้ตามลำดับเส้นทาง เพื่อให้ได้ผลลัพธ์ที่ดีที่สุด`);
         return;
       }
     }
 
-    setCompletedIds((prev) => {
-      const newIds = prev.includes(id)
-        ? prev.filter((tid) => tid !== id)
-        : [...prev, id];
+    // C. เริ่มการบันทึก
+    setActionLoading(true);
+    const isAlreadyCompleted = completedIds.includes(id);
 
-      // บันทึกกลับลง LocalStorage
-      localStorage.setItem("web_dev_progress", JSON.stringify(newIds));
-      return newIds;
-    });
+    // Optimistic Update (อัปเดต UI ก่อน เพื่อความลื่นไหล)
+    setCompletedIds((prev) =>
+      isAlreadyCompleted ? prev.filter((tid) => tid !== id) : [...prev, id]
+    );
+
+    try {
+      if (isAlreadyCompleted) {
+        // กรณีมีอยู่แล้ว -> ให้ลบออก (Delete)
+        const { error } = await supabase
+          .from("user_progress")
+          .delete()
+          .eq("user_id", user.id)
+          .eq("topic_id", id);
+
+        if (error) throw error;
+      } else {
+        // กรณีไม่มี -> ให้เพิ่มใหม่ (Insert)
+        const { error } = await supabase
+          .from("user_progress")
+          .insert({ user_id: user.id, topic_id: id });
+
+        if (error) throw error;
+      }
+    } catch (error) {
+      console.error("Error updating progress:", error);
+      alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      // Revert UI กลับถ้า Error
+      setCompletedIds((prev) =>
+        isAlreadyCompleted ? [...prev, id] : prev.filter((tid) => tid !== id)
+      );
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const progressPercent = Math.round(
     (completedIds.length / topics.length) * 100
   );
 
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#0B0D13] flex items-center justify-center text-white">
+        <Loader2 size={48} className="animate-spin text-purple-500" />
+      </div>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#0B0D13] text-gray-300 selection:bg-purple-500/30">
-      {/* --- Sticky Progress Bar (จาก Code ชุดที่ 2) --- */}
+      {/* ... (Sticky Progress Bar Code - คงเดิม) ... */}
       <div className="fixed top-16 left-0 right-0 z-40 bg-[#0B0D13]/90 backdrop-blur-md border-b border-white/5 px-4 py-3 shadow-lg">
         <div className="max-w-5xl mx-auto flex items-center gap-4">
           <div className="flex-1">
@@ -320,7 +402,7 @@ export default function WebDeveloperRoadmap() {
         </div>
       </div>
 
-      {/* --- Hero Section (จาก Code ชุดที่ 1) --- */}
+      {/* ... (Hero Section Code - คงเดิม) ... */}
       <div className="relative pt-28 pb-16 px-4 text-center overflow-hidden">
         {/* Background Gradients */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-purple-600/20 blur-[120px] rounded-full pointer-events-none" />
@@ -457,10 +539,13 @@ export default function WebDeveloperRoadmap() {
                             e.stopPropagation();
                             toggleProgress(topic.id);
                           }}
+                          disabled={actionLoading}
                           className={`z-20 p-2 rounded-full transition-all ${
                             isCompleted
                               ? "text-green-500 bg-green-500/10"
                               : "text-gray-600 hover:bg-white/10 hover:text-gray-300"
+                          } ${
+                            actionLoading ? "opacity-50 cursor-not-allowed" : ""
                           }`}
                           title={
                             isCompleted
@@ -468,7 +553,10 @@ export default function WebDeveloperRoadmap() {
                               : "Mark as Completed"
                           }
                         >
-                          {isCompleted ? (
+                          {actionLoading && selectedTopic?.id === topic.id ? (
+                            // โชว์ Loading เฉพาะตัวที่กด ถ้ากดใน Modal
+                            <Loader2 size={20} className="animate-spin" />
+                          ) : isCompleted ? (
                             <CheckCircle2 size={20} />
                           ) : (
                             <Circle size={20} />
@@ -515,6 +603,7 @@ export default function WebDeveloperRoadmap() {
           selectedTopic ? completedIds.includes(selectedTopic.id) : false
         }
         onToggle={toggleProgress}
+        isLoading={actionLoading}
       />
     </main>
   );
