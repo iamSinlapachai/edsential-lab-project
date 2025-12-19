@@ -1,11 +1,17 @@
 // components/WarningModal.tsx
 import React from "react";
+import { AlertTriangle, CheckCircle2, Info } from "lucide-react"; // ใช้ไอคอนจาก lucide เพื่อความสวยงาม
 
 interface WarningModalProps {
   isOpen: boolean;
   onClose: () => void;
   title?: string;
   message: string;
+  onConfirm?: () => void;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: "default" | "danger" | "success";
+  children?: React.ReactNode;
 }
 
 export default function WarningModal({
@@ -18,100 +24,66 @@ export default function WarningModal({
   cancelLabel = "ยกเลิก",
   variant = "default",
   children,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  title?: string;
-  message: string;
-  onConfirm?: () => void;
-  confirmLabel?: string;
-  cancelLabel?: string;
-  variant?: "default" | "danger" | "success";
-  children?: React.ReactNode;
-}) {
+}: WarningModalProps) {
   if (!isOpen) return null;
 
-  // Determine styles based on variant
-  let headerBg = "bg-amber-100";
-  let iconBg = "bg-amber-500";
-  let buttonColor = "bg-gray-900 hover:bg-gray-800";
+  // 1. กำหนดค่าสีตาม Variant ให้เข้ากับธีมมืด
+  let iconColor = "text-purple-400";
+  let iconBg = "bg-purple-500/10";
+  let accentColor = "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20";
+  let Icon = AlertTriangle;
 
   if (variant === "danger") {
-    headerBg = "bg-red-100";
-    iconBg = "bg-red-500";
-    buttonColor = "bg-red-600 hover:bg-red-700";
+    iconColor = "text-red-400";
+    iconBg = "bg-red-500/10";
+    accentColor = "bg-red-600 hover:bg-red-700 shadow-red-600/20";
+    Icon = AlertTriangle;
   } else if (variant === "success") {
-    headerBg = "bg-green-100";
-    iconBg = "bg-green-500";
-    buttonColor = "bg-green-600 hover:bg-green-700";
+    iconColor = "text-purple-400";
+    iconBg = "bg-purple-500/10";
+    accentColor = "bg-purple-600 hover:bg-purple-700 shadow-purple-600/20";
+    Icon = CheckCircle2;
+  } else {
+    Icon = Info;
   }
 
   return (
-    // 1. Overlay: พื้นหลังสีดำจางๆ เต็มจอ
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      {/* 2. Modal Box: กล่องข้อความ */}
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-sm overflow-hidden animate-in fade-in zoom-in duration-200">
-        {/* Header: ส่วนหัวใส่สี หรือไอคอน */}
-        <div className={`${headerBg} p-4 flex justify-center`}>
-          <div className={`${iconBg} text-white rounded-full p-2`}>
-            {/* Icon Based on Variant */}
-            {variant === "success" ? (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-8 h-8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M4.5 12.75l6 6 9-13.5"
-                />
-              </svg>
-            ) : (
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                strokeWidth={2}
-                stroke="currentColor"
-                className="w-8 h-8"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z"
-                />
-              </svg>
-            )}
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-md p-4 animate-in fade-in duration-300">
+      <div className="relative bg-slate-900 border border-slate-700/50 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-200">
+        
+        {/* แสงฟุ้งด้านหลังไอคอน */}
+        <div className={`absolute -top-10 left-1/2 -translate-x-1/2 h-32 w-32 rounded-full blur-3xl opacity-20 pointer-events-none ${variant === 'danger' ? 'bg-red-600' : variant === 'success' ? 'bg-green-600' : 'bg-purple-600'}`} />
+
+        {/* Header: แสดงไอคอนตามประเภท */}
+        <div className="pt-8 pb-4 flex justify-center relative z-10">
+          <div className={`${iconBg} ${iconColor} rounded-2xl p-4 border border-white/5`}>
+            <Icon size={40} />
           </div>
         </div>
 
-        {/* Content: เนื้อหา */}
-        <div className="p-6 text-center">
-          <h3 className="text-xl font-bold text-gray-900 mb-2">{title}</h3>
-          <p className="text-gray-600 mb-4 leading-relaxed whitespace-pre-line">
+        {/* Content */}
+        <div className="px-8 pb-8 text-center relative z-10">
+          <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
+          <p className="text-slate-400 text-sm leading-relaxed whitespace-pre-line mb-6">
             {message}
           </p>
 
-          {/* Custom Input or Content */}
-          {children && <div className="mb-6">{children}</div>}
+          {/* ถ้ามี Children (เช่น Input เพิ่มเติม) */}
+          {children && <div className="mb-6 text-left">{children}</div>}
 
-          {/* Buttons */}
+          {/* ปุ่มกด */}
           <div className="flex gap-3 justify-center">
             {onConfirm ? (
               <>
                 <button
                   onClick={onClose}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-2.5 px-4 rounded-lg transition-colors"
+                  className="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold py-3 px-4 rounded-xl transition-all active:scale-95 border border-slate-700"
                 >
                   {cancelLabel}
                 </button>
                 <button
                   onClick={onConfirm}
-                  className={`flex-1 text-white font-medium py-2.5 px-4 rounded-lg transition-colors ${buttonColor}`}
+                  className={`flex-1 text-white font-semibold py-3 px-4 rounded-xl transition-all active:scale-95 shadow-lg ${accentColor}`}
                 >
                   {confirmLabel}
                 </button>
@@ -119,7 +91,7 @@ export default function WarningModal({
             ) : (
               <button
                 onClick={onClose}
-                className={`w-full text-white font-medium py-2.5 px-4 rounded-lg transition-colors ${buttonColor}`}
+                className={`w-full text-white font-semibold py-3 px-4 rounded-xl transition-all active:scale-95 shadow-lg ${accentColor}`}
               >
                 {confirmLabel || "เข้าใจแล้ว"}
               </button>

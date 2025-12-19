@@ -166,7 +166,7 @@ export default function SettingsPage() {
               <button
                 onClick={handleResetPassword}
                 disabled={loadingReset}
-                className="flex items-center justify-center flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px]"
+                className="flex items-center justify-center flex-shrink-0 px-4 py-1.5 bg-gray-800 hover:bg-gray-700 text-white rounded-lg text-xs md:text-sm border border-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-w-[80px] cursor-pointer"
               >
                 {loadingReset ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -214,7 +214,7 @@ export default function SettingsPage() {
             <button
               onClick={() => setShowDeleteConfirm(true)}
               disabled={loadingDelete}
-              className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full sm:w-auto px-5 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs md:text-sm transition-all font-bold shadow-lg shadow-red-900/20 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
               {loadingDelete ? (
                 <>
