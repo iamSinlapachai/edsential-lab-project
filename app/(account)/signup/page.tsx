@@ -1,8 +1,69 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
-import GoogleLogo from "@/assets/image/GoogleLogo.png";
-import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabaseClient";
+import { Loader2, AlertCircle } from "lucide-react";
 
 export default function SignUpPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  // 1. State สำหรับเก็บค่าและสถานะต่างๆ
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  // 2. ฟังก์ชันเก็บค่าจาก Input
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // 3. ฟังก์ชันส่งข้อมูลเมื่อกดปุ่ม
+  const handleSignUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setErrorMsg(null);
+
+    // Validation เบื้องต้น
+    if (formData.password !== formData.confirmPassword) {
+      setErrorMsg("รหัสผ่านและการยืนยันรหัสผ่านไม่ตรงกัน");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      // ส่งข้อมูลไป Supabase
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name, // เก็บชื่อไว้ใน Metadata
+          },
+          // ให้ redirect กลับมาที่หน้านี้เพื่อให้ middleware จัดการต่อ (หรือสร้างหน้า auth/callback)
+          emailRedirectTo: `${location.origin}/auth/callback`,
+        },
+      });
+
+      if (error) throw error;
+
+      // ถ้าสำเร็จ ให้ไปหน้าแจ้งเตือนให้เช็คเมล
+      router.push("/verify-email");
+    } catch (error: any) {
+      console.error("Signup Error:", error);
+      setErrorMsg(error.message || "เกิดข้อผิดพลาดในการสมัครสมาชิก");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center bg-slate-900 overflow-hidden">
       {/* --- Background Elements --- */}
@@ -23,98 +84,115 @@ export default function SignUpPage() {
           </p>
         </div>
 
+        {/* Error Message Display */}
+        {errorMsg && (
+          <div className="flex items-center gap-2 p-3 text-sm text-red-400 bg-red-900/20 border border-red-900/50 rounded-lg animate-in fade-in slide-in-from-top-2">
+            <AlertCircle size={16} />
+            <span>{errorMsg}</span>
+          </div>
+        )}
+
         {/* Form */}
-        <form className="space-y-4">
+        <form onSubmit={handleSignUp} className="space-y-4">
           <div className="space-y-2">
-            <label htmlFor="name" className="text-sm font-medium text-slate-200">
+            <label
+              htmlFor="name"
+              className="text-sm font-medium text-slate-200"
+            >
               Name
             </label>
             <input
               id="name"
-              placeholder="Your name"
               type="text"
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              required
+              placeholder="Your name"
+              value={formData.name}
+              onChange={handleChange}
+              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="email" className="text-sm font-medium text-slate-200">
+            <label
+              htmlFor="email"
+              className="text-sm font-medium text-slate-200"
+            >
               Email
             </label>
             <input
               id="email"
-              placeholder="name@example.com"
               type="email"
+              required
               autoCapitalize="none"
               autoComplete="email"
               autoCorrect="off"
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              placeholder="name@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-slate-200">
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-slate-200"
+            >
               Password
             </label>
             <input
               id="password"
               type="password"
+              required
+              minLength={6}
               placeholder="••••••••"
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={formData.password}
+              onChange={handleChange}
+              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-slate-200">
+            <label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-slate-200"
+            >
               Confirm Password
             </label>
             <input
-              id="password"
+              id="confirmPassword"
               type="password"
+              required
               placeholder="••••••••"
-              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              className="w-full rounded-md border border-slate-800 bg-slate-950 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all"
             />
           </div>
 
           <button
-
-            className="w-full rounded-md bg-purple-700 py-2 mt-3 text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600"
+            type="submit"
+            disabled={loading}
+            className="w-full flex items-center justify-center rounded-md bg-purple-700 py-2 mt-3 text-sm font-medium text-white hover:bg-purple-800 focus:outline-none focus:ring-2 focus:ring-purple-600 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
-            Continue
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              "Continue"
+            )}
           </button>
         </form>
-
-        {/* Divider */}
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-slate-200 dark:border-slate-800" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-white px-2 text-slate-500 dark:bg-slate-950 dark:text-slate-400">
-              Or continue with
-            </span>
-          </div>
-        </div>
-
-        {/* Google Login */}
-        <button className="inline-flex h-10 w-full items-center justify-center rounded-md border bg-white px-4 py-2 text-sm font-medium text-slate-900 hover:bg-gray-200">
-          <Image
-            src={GoogleLogo}
-            alt="Google Logo"
-            width={16}
-            height={16}
-            className="mr-2"
-          />
-          Google
-        </button>
 
         {/* Footer */}
         <div className="space-y-2">
           <p className="px-8 text-center text-sm text-slate-500 dark:text-slate-400">
             Already have an account?{" "}
             <Link
-              href="/login"
-              className="font-semibold text-slate-900 underline underline-offset-4 hover:text-slate-800 dark:text-slate-100 dark:hover:text-slate-300"
+              href="/signin"
+              className="font-semibold text-slate-900 underline underline-offset-4 hover:text-slate-800 dark:text-slate-100 dark:hover:text-slate-300 transition-colors"
             >
               Sign in
             </Link>
