@@ -145,7 +145,7 @@ export default function EdsentialProgressPage() {
         </div>
 
         {/* Level Badge */}
-        <div className="flex flex-col items-end">
+        {/* <div className="flex flex-col items-end">
           <div className="flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-indigo-600 text-white px-4 py-1.5 rounded-full shadow-lg shadow-purple-500/20 border border-purple-400/30">
             <Zap className="w-5 h-5 fill-yellow-300 text-yellow-300" />
             <span className="text-base font-bold">LV. {stats.level}</span>
@@ -153,7 +153,7 @@ export default function EdsentialProgressPage() {
           <p className="text-xs text-purple-400 mt-2 font-mono">
             XP: {stats.xp}
           </p>
-        </div>
+        </div> */}
       </div>
 
       {/* --- 1. Top Stats Grid --- */}
