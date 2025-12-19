@@ -1,35 +1,28 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
-import { Moon, Sun } from 'lucide-react'; // ลบ Menu ออกจาก import
+import { Moon, Sun } from 'lucide-react';
 import { useState } from 'react';
-import profileImg from '@/assets/image/profile.png';
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
-import { deepOrange, deepPurple } from '@mui/material/colors';
-
-// ... (import อื่นๆ เหมือนเดิม)
+import { deepPurple } from '@mui/material/colors';
 
 export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(true);
+  // จำลองสถานะการ Login (เปลี่ยนเป็น true เพื่อดูผลลัพธ์ของ Avatar)
+  const [isLoggedIn, setIsLoggedIn] = useState(false); 
 
   const toggleTheme = () => {
     setIsDarkMode(!isDarkMode);
   };
 
   return (
-    // แก้ไขบรรทัดนี้: เพิ่ม sticky top-0 และ z-50
     <nav className="w-full bg-[#0F1117] sticky top-0 z-50 border-b border-gray-800">
-
-      {/* Container จัดกึ่งกลาง */}
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
-
+        
         {/* --- LEFT SIDE --- */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
-            {/* ปรับ tracking-widest ตามที่คุณเคยถามเพื่อความสวยงาม */}
-            <h1 className="font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
+            <h1 className="text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight">
               Edsential
             </h1>
           </Link>
@@ -37,11 +30,37 @@ export default function Navbar() {
 
         {/* --- RIGHT SIDE --- */}
         <div className="flex items-center gap-4">
-          <Link
-            href="/settings/profile"
-            className="hover:opacity-80 transition-opacity" >
-            <Avatar sx={{ bgcolor: deepPurple[500], width: 36, height:36 }}>N</Avatar>
-          </Link>
+
+          {/* ตรวจสอบสถานะการ Login */}
+          {!isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              {/* ปุ่ม Login: แบบเรียบๆ */}
+              <Link 
+                href="/signin" 
+                className="text-sm font-medium text-gray-300 hover:text-white transition-colors px-4 py-2"
+              >
+                Login
+              </Link>
+              
+              {/* ปุ่ม Sign up: มีกรอบม่วง purple-600 และเด่นกว่า */}
+              <Link 
+                href="/signup" 
+                className="text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-500 px-5 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95"
+              >
+                Sign up
+              </Link>
+            </div>
+          ) : (
+            /* ปุ่ม Avatar: แสดงเมื่อ Login แล้ว */
+            <Link
+              href="/settings/profile"
+              className="hover:opacity-80 transition-opacity ring-2 ring-purple-500/20 rounded-full p-0.5"
+            >
+              <Avatar sx={{ bgcolor: deepPurple[500], width: 36, height: 36, fontSize: '1rem' }}>
+                N
+              </Avatar>
+            </Link>
+          )}
         </div>
 
       </div>
