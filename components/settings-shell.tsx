@@ -172,16 +172,6 @@ export default function SettingsShell({
                 ))}
               </div>
             </div>
-
-            <div className="pt-6 border-t border-gray-800 mt-6">
-              <p className="text-sm font-medium text-gray-500">มีคำถาม?</p>
-              <Link
-                href="/support"
-                className="text-sm text-purple-400 hover:underline"
-              >
-                ศูนย์ช่วยเหลือ
-              </Link>
-            </div>
           </nav>
         </aside>
 
