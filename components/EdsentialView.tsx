@@ -13,7 +13,7 @@ import {
   Trophy,
   Loader2,
 } from "lucide-react";
-import WarningModal from "@/components/WarningModal"; // อย่าลืมสร้างไฟล์ WarningModal หรือ import ให้ถูก path
+import WarningModal from "@/components/WarningModal";
 import VideoModal from "@/components/VideoModal";
 
 // --- Types ---
@@ -75,6 +75,7 @@ export default function EdsentialView({
       setUser(user);
 
       if (user) {
+        // ดึง node_id ที่จบแล้วทั้งหมดของผู้ใช้ (รวมทุกคอร์ส)
         const { data } = await supabase
           .from("user_progress")
           .select("node_id")
@@ -88,18 +89,15 @@ export default function EdsentialView({
 
   // --- Helper: Update Streak Logic ---
   const updateStreak = async (userId: string) => {
-    // 1. ดึงข้อมูล Streak ปัจจุบัน
     const { data: profile } = await supabase
       .from("profiles")
       .select("current_streak, last_activity_date")
       .eq("id", userId)
       .single();
 
-    // ใช้ Date Object เพื่อคำนวณวัน
     const now = new Date();
-    const todayStr = now.toISOString().split("T")[0]; // YYYY-MM-DD (UTC)
+    const todayStr = now.toISOString().split("T")[0];
 
-    // หา "เมื่อวาน"
     const yesterday = new Date(now);
     yesterday.setDate(yesterday.getDate() - 1);
     const yesterdayStr = yesterday.toISOString().split("T")[0];
@@ -107,19 +105,14 @@ export default function EdsentialView({
     const lastDate = profile?.last_activity_date;
     let newStreak = profile?.current_streak || 0;
 
-    // Logic การนับ Streak
     if (lastDate === todayStr) {
-      // ทำวันนี้ไปแล้ว -> ไม่ต้องเพิ่ม Streak
       return;
     } else if (lastDate === yesterdayStr) {
-      // ทำต่อเนื่องจากเมื่อวาน -> Streak + 1
       newStreak += 1;
     } else {
-      // ขาดช่วง หรือเพิ่งเริ่ม -> เริ่มนับ 1 ใหม่
       newStreak = 1;
     }
 
-    // อัปเดตลง Database
     await supabase
       .from("profiles")
       .update({
@@ -131,7 +124,6 @@ export default function EdsentialView({
 
   // 2. Toggle Logic (Save/Unsave)
   const toggleProgress = async (nodeId: number) => {
-    // A. Check Login
     if (!user) {
       setWarningConfig({
         isOpen: true,
@@ -143,7 +135,6 @@ export default function EdsentialView({
       return;
     }
 
-    // B. Check Sequence Logic (ห้ามข้ามขั้นตอน)
     const currentIndex = nodes.findIndex((n) => n.id === nodeId);
     if (currentIndex > 0 && !completedIds.includes(nodeId)) {
       const prevNode = nodes[currentIndex - 1];
@@ -162,7 +153,6 @@ export default function EdsentialView({
     setActionLoading(true);
     const isAlreadyCompleted = completedIds.includes(nodeId);
 
-    // Optimistic UI: อัปเดต State ทันทีเพื่อให้ User รู้สึกว่าแอปเร็ว
     setCompletedIds((prev) =>
       isAlreadyCompleted
         ? prev.filter((id) => id !== nodeId)
@@ -171,27 +161,21 @@ export default function EdsentialView({
 
     try {
       if (isAlreadyCompleted) {
-        // กรณี: ยกเลิกการเรียนจบ (Delete)
         await supabase
           .from("user_progress")
           .delete()
           .eq("user_id", user.id)
           .eq("node_id", nodeId);
       } else {
-        // กรณี: เรียนจบ (Insert)
         await supabase
           .from("user_progress")
           .insert({ user_id: user.id, node_id: nodeId });
 
-        // ✅ อัปเดต Streak ทันทีเมื่อเรียนจบ
         await updateStreak(user.id);
       }
-
-      // ✅ สั่ง Refresh เพื่อให้ Navbar (ที่มี Streak) และหน้า Home อัปเดตข้อมูล
       router.refresh();
     } catch (error) {
       console.error("Error:", error);
-      // Revert state if error (Rollback UI)
       setCompletedIds((prev) =>
         isAlreadyCompleted
           ? [...prev, nodeId]
@@ -202,9 +186,15 @@ export default function EdsentialView({
     }
   };
 
-  const progressPercent = Math.round(
-    (completedIds.length / nodes.length) * 100
+  // ✅ แก้ไขการคำนวณ Progress ตรงนี้
+  // กรองเฉพาะ completedIds ที่มีอยู่ใน nodes ของคอร์สปัจจุบัน
+  const currentCourseCompletedIds = completedIds.filter((id) =>
+    nodes.some((n) => n.id === id)
   );
+
+  const progressPercent = nodes.length > 0 
+    ? Math.round((currentCourseCompletedIds.length / nodes.length) * 100)
+    : 0;
 
   return (
     <main className="min-h-screen bg-[#0B0D13] text-gray-300 selection:bg-purple-500/30">
@@ -250,7 +240,6 @@ export default function EdsentialView({
 
       {/* Nodes Loop */}
       <div className="max-w-5xl mx-auto px-4 pb-32 mt-10 relative">
-        {/* Center Line */}
         <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-1 bg-purple-900/50 md:-translate-x-1/2 rounded-full" />
 
         {nodes.map((node, index) => {
@@ -263,7 +252,6 @@ export default function EdsentialView({
                 isEven ? "md:flex-row" : "md:flex-row-reverse"
               }`}
             >
-              {/* Connector Dot */}
               <div
                 className={`absolute left-8 md:left-1/2 -translate-x-[5px] md:-translate-x-1/2 w-4 h-4 rounded-full z-10 border-[3px] shadow-[0_0_15px_rgba(168,85,247,0.5)] transition-all duration-500 ${
                   isCompleted
@@ -276,10 +264,8 @@ export default function EdsentialView({
                 )}
               </div>
 
-              {/* Spacer */}
               <div className="hidden md:block md:w-1/2" />
 
-              {/* Card */}
               <div
                 className={`w-full md:w-1/2 pl-20 md:pl-0 ${
                   isEven ? "md:pr-12" : "md:pl-12"
@@ -293,7 +279,6 @@ export default function EdsentialView({
                       : "bg-[#13151c] border-white/5 hover:border-purple-500/50 hover:shadow-xl hover:shadow-purple-500/10"
                   }`}
                 >
-                  {/* Glow Effect */}
                   <div
                     className={`absolute inset-0 bg-linear-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${
                       isCompleted
@@ -367,7 +352,6 @@ export default function EdsentialView({
           );
         })}
 
-        {/* End Node */}
         <div className="relative flex justify-center mt-12 pl-8 md:pl-0">
           <div
             className={`px-6 py-3 rounded-full flex items-center gap-3 shadow-lg z-10 border transition-all duration-500 ${
@@ -399,7 +383,6 @@ export default function EdsentialView({
         isLoading={actionLoading}
       />
 
-      {/* Warning Modal */}
       <WarningModal
         isOpen={warningConfig.isOpen}
         onClose={closeWarning}
