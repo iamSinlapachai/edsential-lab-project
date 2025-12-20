@@ -139,7 +139,12 @@ export default function SignUpPage() {
 
           {/* Password Input พร้อมปุ่ม Show/Hide */}
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-slate-200">Password</label>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-slate-200"
+            >
+              Password
+            </label>
             <div className="relative">
               <input
                 id="password"
@@ -163,7 +168,12 @@ export default function SignUpPage() {
 
           {/* Confirm Password Input พร้อมปุ่ม Show/Hide */}
           <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="text-sm font-medium text-slate-200">Confirm Password</label>
+            <label
+              htmlFor="confirmPassword"
+              className="text-sm font-medium text-slate-200"
+            >
+              Confirm Password
+            </label>
             <div className="relative">
               <input
                 id="confirmPassword"

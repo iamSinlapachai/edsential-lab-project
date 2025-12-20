@@ -45,7 +45,6 @@ export default function SignInForm() {
       router.push("/");
       router.refresh(); // รีเฟรชเพื่อให้ Server Components อัปเดตสถานะ Auth ทันที
     } catch (error: any) {
-      console.error("Login Error:", error.message);
       setErrorMsg("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
     } finally {
       setLoading(false);

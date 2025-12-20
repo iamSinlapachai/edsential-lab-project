@@ -123,10 +123,8 @@ export default async function ProfilePage() {
           </div>
         </section>
 
-        
-
         {/* Contact Info */}
-        <section >
+        <section>
           <h2 className="text-lg font-semibold text-white mb-4 border-b border-gray-800 pb-2 flex items-center">
             <Mail className="w-4 h-4 mr-2 text-purple-500" /> ข้อมูลติดต่อ
           </h2>

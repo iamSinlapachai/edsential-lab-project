@@ -1,4 +1,4 @@
-// app/api/auth/delete-account/route.ts
+// app\api\auth\delete-account\route.ts
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createServerClient } from '@/lib/supabaseServer'; // Client ปกติสำหรับเช็ค Session
 import { cookies } from 'next/headers';
