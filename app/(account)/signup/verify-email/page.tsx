@@ -1,7 +1,21 @@
+import { createClient } from "@/lib/supabaseServer"; // เรียกใช้ Server Client
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import Link from "next/link";
-import { Mail, ArrowLeft } from "lucide-react"; // ใช้ Icon จาก Lucide
+import { Mail, ArrowLeft } from "lucide-react";
 
-export default function SignupVerifyEmailPage() {
+export default async function SignupVerifyEmailPage() {
+  // ✅ เพิ่มการเช็ค Auth
+  const cookieStore = await cookies();
+  const supabase = createClient(cookieStore);
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // ถ้า User ยืนยันอีเมลสำเร็จแล้ว (email_confirmed_at ไม่เป็น null) ให้ดีดไปหน้า Home
+  if (user?.email_confirmed_at) {
+    redirect("/");
+  }
   return (
     <div className="relative flex min-h-screen w-full items-center justify-center bg-slate-900 overflow-hidden">
       {/* --- Background --- */}
