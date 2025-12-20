@@ -5,10 +5,13 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabaseClient"; // ตรวจสอบ path ให้ตรงกับโปรเจกต์
 import { Loader2, AlertCircle, Eye, EyeOff } from "lucide-react";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
 export default async function SignInPage() {
   const router = useRouter();
   const supabase = createClient();
+  const cookieStore = await cookies();
 
   // 1. State Management
   const [formData, setFormData] = useState({
@@ -105,7 +108,12 @@ export default async function SignInPage() {
 
           {/* Password Input พร้อมปุ่ม Show/Hide */}
           <div className="space-y-2">
-            <label htmlFor="password" className="text-sm font-medium text-slate-200">Password</label>
+            <label
+              htmlFor="password"
+              className="text-sm font-medium text-slate-200"
+            >
+              Password
+            </label>
             <div className="relative">
               <input
                 id="password"
