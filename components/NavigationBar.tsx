@@ -15,12 +15,14 @@ export default function Navbar() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [streak, setStreak] = useState(0);
-  const [profileAvatar, setProfileAvatar] = useState<string | null>(null); // State ใหม่สำหรับรูปโปรไฟล์
+  const [profileAvatar, setProfileAvatar] = useState<string | null>(null);
 
   useEffect(() => {
-    // 1. ฟังก์ชันดึงข้อมูล User และ Profile (รวมรูปภาพ)
+    // 1. ฟังก์ชันดึงข้อมูล User และ Profile
     const fetchData = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
@@ -32,7 +34,13 @@ export default function Navbar() {
 
         if (profile) {
           setStreak(profile.current_streak || 0);
-          setProfileAvatar(profile.avatar_url || null);
+
+          // ✅ Cache Busting: เพิ่ม timestamp เพื่อให้รูปโหลดใหม่เสมอเมื่อเข้าเว็บ
+          if (profile.avatar_url) {
+            setProfileAvatar(`${profile.avatar_url}?t=${new Date().getTime()}`);
+          } else {
+            setProfileAvatar(null);
+          }
         }
       }
       setLoading(false);
@@ -40,42 +48,58 @@ export default function Navbar() {
 
     fetchData();
 
-    // 2. Realtime Listener: ดักฟังการแก้ไขข้อมูลในตาราง profiles
-    const profileSubscription = supabase
-      .channel('navbar-profile-sync')
-      .on(
-        'postgres_changes',
-        {
-          event: '*', // ฟังทั้ง INSERT และ UPDATE
-          schema: 'public',
-          table: 'profiles',
-        },
-        (payload: any) => {
-          // ตรวจสอบว่าเป็นของ User คนปัจจุบันหรือไม่
-          if (user && payload.new.id === user.id) {
-            setProfileAvatar(payload.new.avatar_url);
-            setStreak(payload.new.current_streak);
+    // 2. Realtime Listener: ดักฟังการแก้ไขข้อมูลเฉพาะ User คนนี้
+    let profileSubscription: any;
+
+    if (user) {
+      profileSubscription = supabase
+        .channel("navbar-profile-sync")
+        .on(
+          "postgres_changes",
+          {
+            event: "UPDATE", // ฟังเฉพาะการ Update ข้อมูล
+            schema: "public",
+            table: "profiles",
+            filter: `id=eq.${user.id}`, // ✅ Filter เอาเฉพาะ ID ของ User คนนี้เพื่อ performance
+          },
+          (payload: any) => {
+            // อัปเดต Avatar (พร้อม timestamp ใหม่เพื่อแก้ Cache)
+            const newAvatar = payload.new.avatar_url;
+            if (newAvatar) {
+              setProfileAvatar(`${newAvatar}?t=${new Date().getTime()}`);
+            } else {
+              setProfileAvatar(null);
+            }
+
+            // อัปเดต Streak
+            if (payload.new.current_streak !== undefined) {
+              setStreak(payload.new.current_streak);
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+    }
 
     // 3. Auth Listener: คอยฟังการ Login/Logout
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const {
+      data: { subscription: authSubscription },
+    } = supabase.auth.onAuthStateChange(async (event, session) => {
       setUser(session?.user ?? null);
       if (!session?.user) {
+        // กรณี Logout
         setStreak(0);
         setProfileAvatar(null);
-      } else {
-        fetchData(); // ดึงข้อมูลใหม่เมื่อมีการเปลี่ยนสถานะ Auth
+      } else if (event === "SIGNED_IN") {
+        // กรณี Login ใหม่ ให้ดึงข้อมูลใหม่ทันที
+        fetchData();
       }
     });
 
     return () => {
       authSubscription.unsubscribe();
-      supabase.removeChannel(profileSubscription);
+      if (profileSubscription) supabase.removeChannel(profileSubscription);
     };
-  }, [supabase, user?.id]); // ทำงานใหม่ถ้า user.id เปลี่ยน
+  }, [supabase, user?.id]); // ✅ Dependency ถูกต้อง (ทำงานใหม่เมื่อ user id เปลี่ยน)
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -83,13 +107,11 @@ export default function Navbar() {
   };
 
   return (
-    <nav className="w-full bg-[#0F1117] sticky top-0 z-100 border-b border-gray-800">
+    <nav className="w-full bg-[#0F1117] sticky top-0 z-50 border-b border-gray-800">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-8">
-
         {/* Logo Section */}
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-3 group">
-            {/* ปรับขนาด Image: ปกติ 22px (มือถือ), หน้าจอใหญ่ขึ้นไปเป็น 28px */}
             <Image
               src={EdsentialLogo}
               alt="Edsential Logo"
@@ -97,8 +119,6 @@ export default function Navbar() {
               height={28}
               className="w-6 h-6 md:w-7 md:h-7 transition-all"
             />
-
-            {/* ปรับขนาด Text: ปกติ text-lg (มือถือ), หน้าจอใหญ่ขึ้นไปเป็น text-xl */}
             <h1 className="text-l md:text-xl font-bold text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-pink-500 tracking-tight transition-all">
               Edsential
             </h1>
@@ -111,25 +131,41 @@ export default function Navbar() {
             <Loader2 className="animate-spin text-gray-500" size={20} />
           ) : !user ? (
             <div className="flex items-center gap-2">
-              <Link href="/signin" className="text-sm font-medium text-gray-300 hover:text-white px-4 py-2">
+              <Link
+                href="/signin"
+                className="text-sm font-medium text-gray-300 hover:text-white px-4 py-2"
+              >
                 Log in
               </Link>
-              <Link href="/signup" className="text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-500 px-4 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95">
+              <Link
+                href="/signup"
+                className="text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 border border-purple-500 px-4 py-2 rounded-lg transition-all shadow-[0_0_15px_rgba(147,51,234,0.3)] active:scale-95"
+              >
                 Sign up
               </Link>
             </div>
           ) : (
             <div className="flex items-center gap-4">
               {/* Streak */}
-              <div className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400" title="Current Day Streak">
-                <Flame className={`w-4 h-4 ${streak > 0 ? "fill-orange-500 animate-pulse" : ""}`} />
+              <div
+                className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-orange-500/10 border border-orange-500/20 text-orange-400 select-none"
+                title="Current Day Streak"
+              >
+                <Flame
+                  className={`w-4 h-4 ${
+                    streak > 0 ? "fill-orange-500 animate-pulse" : ""
+                  }`}
+                />
                 <span className="text-sm font-bold font-mono">{streak}</span>
               </div>
 
               {/* Avatar Link - ใช้รูปจาก profileAvatar state */}
-              <Link href="/settings/profile" className="hover:opacity-80 transition-opacity ring-2 ring-purple-500/20 rounded-full p-0.5">
+              <Link
+                href="/settings/profile"
+                className="hover:opacity-80 transition-opacity ring-2 ring-purple-500/20 rounded-full p-0.5"
+              >
                 <Avatar
-                  src={profileAvatar || ""} // ใช้ข้อมูลจาก Table profiles โดยตรง
+                  src={profileAvatar || ""} // ✅ ใช้ URL ที่มี Timestamp
                   alt={user.user_metadata?.full_name || "User"}
                   sx={{
                     bgcolor: deepPurple[500],
@@ -143,7 +179,11 @@ export default function Navbar() {
               </Link>
 
               {/* Logout */}
-              <button onClick={handleSignOut} className="text-gray-400 hover:text-red-400 transition-colors p-2" title="Sign out">
+              <button
+                onClick={handleSignOut}
+                className="text-gray-400 hover:text-red-400 transition-colors p-2"
+                title="Sign out"
+              >
                 <LogOut size={20} />
               </button>
             </div>

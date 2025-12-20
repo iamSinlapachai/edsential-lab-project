@@ -33,17 +33,18 @@ const VideoModal: React.FC<VideoModalProps> = ({
   if (!isOpen || !node) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    /* ✅ Container หลัก: scroll ได้ทั้งหน้า */
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/80 backdrop-blur-sm transition-opacity"
+        className="absolute inset-0 bg-black/80 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Content */}
-      <div className="relative w-full max-w-3xl bg-[#1a1d26] rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-linear-to-br from-purple-900/20 to-transparent">
+      {/* ✅ Modal */}
+      <div className="relative w-full max-w-3xl max-h-[90vh] bg-[#1a1d26] rounded-2xl border border-purple-500/30 shadow-2xl overflow-hidden flex flex-col animate-in fade-in zoom-in-95 duration-200">
+        {/* Header (fixed) */}
+        <div className="flex items-center justify-between p-6 border-b border-white/10 bg-linear-to-br from-purple-900/20 to-transparent shrink-0">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${node.color_class}`}>
               {getIcon(node.icon_name)}
@@ -60,6 +61,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
               </h2>
             </div>
           </div>
+
           <button
             onClick={onClose}
             className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors"
@@ -68,8 +70,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
           </button>
         </div>
 
-        {/* Body */}
-        <div className="p-6 overflow-y-auto max-h-[70vh]">
+        {/* ✅ Body (scroll ได้) */}
+        <div className="p-6 overflow-y-auto flex-1">
           <div className="relative w-full aspect-video rounded-xl overflow-hidden shadow-lg bg-black ring-1 ring-white/10 mb-6">
             <iframe
               className="absolute top-0 left-0 w-full h-full"
@@ -77,8 +79,9 @@ const VideoModal: React.FC<VideoModalProps> = ({
               allowFullScreen
               title={node.title}
               allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            ></iframe>
+            />
           </div>
+
           <div className="prose prose-invert max-w-none">
             <p className="text-lg text-gray-300 whitespace-pre-line leading-relaxed">
               {node.description}
@@ -86,8 +89,8 @@ const VideoModal: React.FC<VideoModalProps> = ({
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="p-4 bg-[#13151c] border-t border-white/10 flex justify-between items-center">
+        {/* Footer (fixed) */}
+        <div className="p-4 bg-[#13151c] border-t border-white/10 flex justify-between items-center shrink-0">
           <button
             onClick={() => onToggle(node.id)}
             disabled={isLoading}
@@ -106,6 +109,7 @@ const VideoModal: React.FC<VideoModalProps> = ({
             )}
             {isCompleted ? "เรียนจบแล้ว" : "ยังไม่เรียนจบ"}
           </button>
+
           <button
             onClick={onClose}
             className="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors font-medium"

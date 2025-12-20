@@ -1,5 +1,5 @@
 import Link from "next/link";
-import "aos/dist/aos.css";
+// import "aos/dist/aos.css";
 import { createClient } from "@/lib/supabaseServer"; // ใช้ Server Client
 import { cookies } from "next/headers";
 import BookmarkButton from "@/components/(bookmark)/BookmarkButton";
@@ -55,17 +55,14 @@ export default async function Home() {
       <MyLearningSection />
 
       {/* Filter Section */}
-      <div className="flex justify-center mb-8 md:mb-10" data-aos="fade-up">
+      <div className="flex justify-center mb-8 md:mb-10">
         <div className="bg-[#1e222e] border border-gray-800 rounded-lg px-4 py-1.5 text-xs sm:text-sm font-medium text-gray-300 shadow-sm cursor-default">
           All Roadmaps
         </div>
       </div>
 
       {/* Grid Section (ดึงจาก DB) */}
-      <div
-        className="max-w-7xl mx-auto px-8 md:px-8 sm:px-8"
-        data-aos="fade-up"
-      >
+      <div className="max-w-7xl mx-auto px-8 md:px-8 sm:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
           {courses?.map((course) => (
             <Link
